@@ -101,6 +101,5 @@ ENV/
 .mypy_cache/
 
 #Model and test file
-model/
 test/
-
+data/
