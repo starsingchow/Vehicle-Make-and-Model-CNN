@@ -1,3 +1,6 @@
+# !/usr/bin/python3
+# -*- coding: utf-8 -*-
+
 import tensorflow as tf
 import tensorflow.contrib.slim as slim
 import numpy as np
@@ -40,6 +43,6 @@ class GoogLeNet(object):
         with arg_scope([inception_layer],
                         trainable =  
                         data_dict = data_dict
-                        )
+                        ):
             inception3a = inception_layer(pool2, 64, 96, 128, 16, 32, 32)
             
