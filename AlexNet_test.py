@@ -5,6 +5,7 @@ import sys
 import tensorflow as tf
 import numpy as np
 import AlexNet as alexnet
+import GoogLeNet as googlenet
 import cv2
 import caffe_classes
 
@@ -28,24 +29,29 @@ elif args.mode == 'url':
 
 if testImg.values():
     #params
-    keep_drop = 1
+    keep_drop = 0.4
     num_label = 1000
     skip = []
 
     imgMean = np.array([104, 117, 124], np.float)
-    x = tf.placeholder('float', [1, 227, 227, 3])
+    x = tf.placeholder('float', [1, 224, 224, 3])
 
-    model = alexnet.AlexNet(x, num_label, keep_drop, skip)
-    score = model.fc8
-    softmax = tf.nn.softmax(score)
+    # model = alexnet.AlexNet(x, num_label, keep_drop, skip)
+    # score = model.fc8
+    # softmax = tf.nn.softmax(score)
+    model = googlenet.GoogLeNet(x, num_label, keep_drop, skip)
+    score = model.softmax
 
     with tf.Session() as sess:
+        # summary_writer = tf.summary.FileWriter('./CNN/log', sess.graph)
         sess.run(tf.global_variables_initializer())
+        # summary_writer.close()
+
         model.loadModel(sess)
 
         for key,img in testImg.items():
-            resized = cv2.resize(img.astype(np.float), (227, 227)) - imgMean
-            maxx = np.argmax(sess.run(softmax, feed_dict = {x: resized.reshape((1, 227, 227, 3))}))
+            resized = cv2.resize(img.astype(np.float), (224, 224)) - imgMean
+            maxx = np.argmax(sess.run(score, feed_dict = {x: resized.reshape((1, 224, 224, 3))}))
             res = caffe_classes.class_names[maxx]
 
             font = cv2.FONT_HERSHEY_SIMPLEX

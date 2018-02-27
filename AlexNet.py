@@ -14,7 +14,7 @@ class AlexNet(object):
         self._skip = skip
 
         if weights_path == 'DEFAULT':
-            self.weights_path = './CNN/model/bvlc_alexnet.npy'
+            self.weights_path = './CNN/data/bvlc_alexnet.npy'
         else:
             self.weights_path = weights_path
         self.create()

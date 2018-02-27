@@ -17,12 +17,10 @@ def inception_layer(inputs,
                     name = 'inception',
                     stride = 1,
                     padding = 'SAME',
-                    activation_fn = tf.nn.relu
                     ):
     arg_scope = tf.contrib.framework.arg_scope
 
     with arg_scope([slim.conv2d, slim.max_pool2d],
-                    activation_fn = tf.nn.relu, 
                     stride = stride,
                     padding = padding,
                     ):

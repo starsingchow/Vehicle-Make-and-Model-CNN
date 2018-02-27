@@ -103,3 +103,4 @@ ENV/
 #Model and test file
 test/
 data/
+log/

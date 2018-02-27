@@ -7,8 +7,6 @@ import numpy as np
 
 from models.Inception import inception_layer
 
-
-
 class GoogLeNet(object):
     """Implementation of the GoogLeNet."""
     def __init__(self, input_data, num_label, keep_prob, skip, model_path = 'DEFAULT'):
@@ -17,9 +15,10 @@ class GoogLeNet(object):
         self._skip = skip
 
         if model_path == 'DEFAULT':
-            self.model_path = './CNN/model/'
+            self.model_path = './CNN/data/googlenet.npy'
         else:
             self.weigths_path = model_path
+        
         self._create(input_data)
     
     def _create(self, input_data):
@@ -29,33 +28,31 @@ class GoogLeNet(object):
         # -> Conv2 1x1+1(V) -> Conv2 3x3+1(S) ->LRN2 -> Max_Pool2 3x3+2(S)
         with arg_scope([slim.conv2d, slim.max_pool2d],
                         stride = 2, padding = 'SAME',
-                        activation_fn = tf.nn.relu
                         ):
             conv1 = slim.conv2d(input_data, 64, [7, 7], scope = 'conv1_7x7_s2')
             pool1 = slim.max_pool2d(conv1, [3, 3], scope = 'max_pool1_3x3_s2')
             lrn1 = tf.nn.lrn(pool1, depth_radius=2, alpha=2e-05, beta=0.75, name = 'lrn1')
-
             conv2_reduce = slim.conv2d(lrn1, 64, [1, 1], padding = 'VALID', 
                                         stride = 1, scope = 'conv2_3x3_reduce')
-            conv2 = slim.conv2d(conv2_reduce, 192, [3, 3], scope = 'conv2_3x3')
+            conv2 = slim.conv2d(conv2_reduce, 192, [3, 3], stride = 1, scope = 'conv2_3x3')
             lrn2 = tf.nn.lrn(conv2, depth_radius=2, alpha=2e-05, beta=0.75, name = 'lrn2')
             pool2 = slim.max_pool2d(lrn2, [3, 3], scope = 'max_pool2_3x3_s2')
 
         # Inception3a -> Inception3b -> MaxPool3 3x3+2(S) -> Inception4a -> Inception4b -> Inception4c 
         # -> Inception4e -> MaxPool4 3x3+2(S) -> Inception5a -> Inception5b
         with arg_scope([inception_layer, slim.max_pool2d],
-                        stride = 2, padding = 'SAME'
+                        padding = 'SAME'
                         ):
             inception3a = inception_layer(pool2, 64, 96, 128, 16, 32, 32, name = 'inception_3a')
             inception3b = inception_layer(inception3a, 128, 128, 192, 32, 96, 64, name = 'inception_3b')
-            pool3 = slim.max_pool2d(inception3b, [3, 3], scope = 'max_pool3_3x3_s2')
+            pool3 = slim.max_pool2d(inception3b, [3, 3], scope = 'max_pool3_3x3_s2', stride = 2)
 
             inception4a = inception_layer(pool3, 192, 96, 208, 16, 48, 64, name = 'inception_4a')
             inception4b = inception_layer(inception4a, 160, 112, 224, 24, 64, 64, name = 'inception_4b')
             inception4c = inception_layer(inception4b, 128, 128, 256, 24, 64, 64, name = 'inception_4c')
             inception4d = inception_layer(inception4c, 112, 144, 288, 32, 64, 64, name = 'inception_4d')
             inception4e = inception_layer(inception4d, 256, 160, 320, 32, 128, 128, name = 'inception_4e')
-            pool4 = slim.max_pool2d(inception4e, [3, 3], scope = 'max_pool4_3x3_s2')
+            pool4 = slim.max_pool2d(inception4e, [3, 3], scope = 'max_pool4_3x3_s2', stride = 2)
 
             inception5a = inception_layer(pool4, 256, 160, 320, 32, 128, 128, name = 'inception_5a')
             inception5b = inception_layer(inception5a, 384, 192, 384, 48, 128, 128, name = 'inception_5b')
@@ -67,24 +64,26 @@ class GoogLeNet(object):
         # 为了避免梯度消失，网络额外增加了2个辅助的softmax用于向前传导梯度。文章中说这两个辅助的分类器的loss应该加一个衰减系数，
         # 但看caffe中的model也没有加任何衰减。此外，实际测试的时候，这两个额外的softmax会被去掉。
         # only Branch3
-        pool5 = slim.arg_pool2d(inception5b, [7, 7], stride = 1, padding = 'VALID', scope = 'arg_pool3_7x7_v1')
+        pool5 = slim.avg_pool2d(inception5b, [7, 7], stride = 1, padding = 'VALID', scope = 'arg_pool3_7x7_v1')
         dropout_layer = tf.nn.dropout(pool5, self._keep_prob, name = 'dropout')
         fc1 = slim.fully_connected(dropout_layer, self._num_label, scope = 'loss3_classifier')
-        softmax = tf.nn.softmax(fc1, name = 'class_prob')
+        self.softmax = tf.nn.softmax(fc1, name = 'class_prob')
         
-        return softmax
     
     def loadModel(self, sess):
         wDict = np.load(self.model_path, encoding = 'bytes').item()
         for name in wDict:
            if name not in self._skip:
-               with tf.variable_scope(name, reuse = True):
-                   for p in wDict[name]:
-                        if len(p.shape) == 1:
-                            sess.run(tf.get_variable('biases'), trainable = False). assign((p))
-                        else:
-                            sess.run(tf.get_variable('weigths'), trainable = False).assgin((p))
-                
+                for p in wDict[name]:
+                    if len(wDict[name][p].shape) == 1:
+                        # sess.run(tf.get_variable('biases:0'), trainable = False). assign((p))
+                        assign_op, feed_dict_init = slim.assign_from_values({name +'/biases:0' : wDict[name][p]})
+                    else:
+                        # sess.run(tf.get_variable('weigths:0'), trainable = False).assgin((p))
+                        assign_op, feed_dict_init = slim.assign_from_values({name +'/weights:0' : wDict[name][p]})
+                        
+                    sess.run(assign_op, feed_dict_init)
+               
 
 
 
