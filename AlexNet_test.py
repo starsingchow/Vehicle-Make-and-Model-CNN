@@ -4,8 +4,10 @@ import argparse
 import sys
 import tensorflow as tf
 import numpy as np
+import pandas
 import AlexNet as alexnet
 import GoogLeNet as googlenet
+import MobileNets as mobilenets
 import cv2
 import caffe_classes
 
@@ -39,13 +41,16 @@ if testImg.values():
     # model = alexnet.AlexNet(x, num_label, keep_drop, skip)
     # score = model.fc8
     # softmax = tf.nn.softmax(score)
-    model = googlenet.GoogLeNet(x, num_label, keep_drop, skip)
-    score = model.softmax
+
+    # model = googlenet.GoogLeNet(x, num_label, keep_drop, skip)
+    # score = model.softmax
+    model = mobilenets.MobileNets(x, num_label, keep_drop, skip)
+    score = model.prediction
 
     with tf.Session() as sess:
-        # summary_writer = tf.summary.FileWriter('./CNN/log', sess.graph)
+        summary_writer = tf.summary.FileWriter('./CNN/log', sess.graph)
         sess.run(tf.global_variables_initializer())
-        # summary_writer.close()
+        summary_writer.close()
 
         model.loadModel(sess)
 
