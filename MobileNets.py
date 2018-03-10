@@ -39,10 +39,13 @@ batch_norm_params = {
   }
 
 class MobileNets(object):
-    def __init__(self, inputs, num_label, keep_prob, skip, model_path = 'DEFAULT', conv_defs = None):
+    def __init__(self, inputs, num_label, keep_prob, skip, model_path = 'DEFAULT', 
+                conv_defs = None, train_list = None):
         self._num_label = num_label
         self._keep_prob = keep_prob
         self._skip = skip
+        self._train_list = train_list
+
         if model_path == 'DEFAULT':
             self._model_path = './CNN/data/mobilenets_v1_1.0_224.npy'
         else:
@@ -61,14 +64,12 @@ class MobileNets(object):
                 
                 with tf.variable_scope('Logits'):
                     net = slim.avg_pool2d(net, [7, 7], stride = 1, padding = 'VALID', scope = 'AvgPool_1a')
-                    print(net.shape)
                     end_points['AvgPool_1a'] = net
                 
                     net = slim.dropout(net, keep_prob = self._keep_prob, scope = 'Dropout_1b', is_training = True)
                 
                     logits = slim.conv2d(net, self._num_label, [1, 1], activation_fn = None, normalizer_fn = None, scope = 'Conv2d_1c_1x1')
                     # prediction = slim.softmax(logits, scope = 'Predictions')
-                print(logits.shape)
                 prediction = tf.nn.softmax(logits, name = 'class_prob')
                 end_points['Predictions'] = prediction
                 
@@ -89,10 +90,11 @@ class MobileNets(object):
                     
                     if isinstance(conv_def, Conv):
                         end_point = end_point_base
-
+                        train_able = self._istrain_able(end_point)
                         net = slim.conv2d(net, conv_def.depth, conv_def.kernel, 
                                             stride = conv_def.stride, 
                                             normalizer_fn = slim.batch_norm,
+                                            trainable = train_able, 
                                             scope = end_point)
                         
                         end_points[end_point] = net
@@ -103,10 +105,12 @@ class MobileNets(object):
                     elif isinstance(conv_def, DepthSepConv):
                         end_point = end_point_base + '_depthwise'
 
+                        train_able = self._istrain_able(end_point)
                         net = slim.separable_conv2d(net, None, conv_def.kernel,
                                             stride = conv_def.stride,
                                             depth_multiplier = 1,
                                             normalizer_fn = slim.batch_norm,
+                                            trainable = train_able,
                                             scope = end_point)
 
                         end_points[end_point] = net
@@ -114,10 +118,11 @@ class MobileNets(object):
                             return net, end_points
 
                         end_point = end_point_base + '_pointwise' 
-
+                        train_able = self._istrian_able(end_point)
                         net = slim.conv2d(net, conv_def.depth, [1, 1], 
                                             stride = 1, 
                                             normalizer_fn = slim.batch_norm,
+                                            trainable = train_able,
                                             scope = end_point)
                         end_points[end_point] = net
                         if end_point == final_endpoint:
@@ -138,6 +143,15 @@ class MobileNets(object):
                         assign_op, feed_dict_init = slim.assign_from_values({'MobilenetV1/Mobilenets/' + name +'/' + p +':0' : wDict[name][p]})
                        
                     sess.run(assign_op, feed_dict_init)
+
+    def _istrain_able(self, layer_name):
+        if self._train_list == None:
+            return True
+
+        if layer_name in self._train_list:
+            return True
+        else:
+            return False
 
     def get_prediction(self):
         return self.prediction

@@ -14,7 +14,7 @@ import os
 parser = argparse.ArgumentParser()
 parser.add_argument('net_model', choices = ['alexnet', 'googlenet','mobilenet'], default='folder', help='choose net')
 parser.add_argument('train_model', choices = ['finetune', 'fulltrain','parttune'], default='folder', help='choose net')
-parser.add_ar
+parser.add_argument('--label', type=str, defualt='', help = 'input label number')
 parser.add_argument('--data_dir', type=str, default='', help='input data path')
 parser.add_argument('--model_dir', type=str, default='', help='output model path')
 
@@ -22,6 +22,7 @@ FLAGS, _ = parser.parse_known_args()
 
 args = parser.parse_args()
 NET_TYPE = args.net_type
+LABEL = args.label
 TRAIN_MODEL = args.train_model
 DATA_PATH = args.data_dir
 MODEL_PATH = args.model_dir
@@ -31,28 +32,32 @@ MODEL_NAME = 'model.ckpt'
 '''AlexNet'''
 AlexNet_fine_tune_para = train_para(
     image_size = 227, lr = 0.001, lr_decay = 0.1,
-    train_steps = 100000, train_type = 'fine tune'
+    train_steps = 100000, train_type = 'fine tune',
+    train_list = ['fc8']
 )
 
 AlexNet_part_tune_para = train_para(
     image_size = 227, lr = 0.001, lr_decay = 0.1,
-    train_steps = 80000, train_type = 'part tune'
+    train_steps = 80000, train_type = 'part tune',
+    train_list = ['fc8', 'fc6', 'fc5']
 )
 
 AlexNet_full_train_para = train_para(
     image_size = 227, lr = 0.001, lr_decay = 0.1,
-    train_steps = 100000, train_type = 'full train'
+    train_steps = 100000, train_type = 'full train',
 )
 
 '''GoogLeNet V1'''
 GoogLeNet_fine_tune_para = train_para(
     image_size = 224, lr = 0.0001, lr_decay = 0.96,
-    train_steps = 50000, train_type = 'fine tune'
+    train_steps = 50000, train_type = 'fine tune',
+    train_list = ['loss3_classifier']
 )
 
 GoogLeNet_part_tune_para = train_para(
     image_size = 224, lr = 0.0001, lr_decay = 0.96,
-    train_steps = 50000, train_type = 'part tune'
+    train_steps = 50000, train_type = 'part tune',
+    train_list = ['loss3_classifier', 'inception_5b', 'inception_5a']
 )
 
 GoogLeNet_full_train_para = train_para(
@@ -63,17 +68,19 @@ GoogLeNet_full_train_para = train_para(
 '''MobileNet V1 1.0 224'''
 MobileNet_fine_tune_para = train_para(
     image_size = 224, lr = 0.0001, lr_decay = 0.96,
-    train_steps = 50000, train_type = 'fine tune'
+    train_steps = 50000, train_type = 'fine tune',
+    skip = ['Logits']
 )
 
 MobileNet_part_tune_para = train_para(
     image_size = 224, lr = 0.0001, lr_decay = 0.96,
-    train_steps = 50000, train_type = 'part tune'
+    train_steps = 50000, train_type = 'part tune',
+    skip = ['Logits', 'Conv2d_13_pointwise', 'Conv2d_13_depthwise']
 )
 
 MobileNet_full_train_para = train_para(
     image_size = 224, lr = 0.0001, lr_decay = 0.96,
-    train_steps = 50000, train_type = 'full train'
+    train_steps = 50000, train_type = 'full train',
 )
 
 net_paras = {
@@ -169,7 +176,7 @@ def main(argv=None):
         print('please enter right train type')
     finally:
         return
-    train(net, net_para, )
+    train(net, net_para, LABEL)
 
 
 if __name__ == '__main__':

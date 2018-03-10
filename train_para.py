@@ -4,7 +4,8 @@ class train_para():
     def __init__(self, image_size, lr, lr_decay, 
                 train_steps, reg_rate = None, 
                 moving_average_decay = None,
-                skip = None, train_type = 'full train'
+                skip = None, train_type = 'full train',
+                train_list = None
                 ):
         '''
         image_size: int, input data size
@@ -22,6 +23,7 @@ class train_para():
         self.reg_rate = reg_rate
         self.moving_average_decay = moving_average_decay
         self.skip = skip
+        self.train_list = train_list
         if self.skip == None:
                 self.skip = []
         
