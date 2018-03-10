@@ -68,6 +68,7 @@ class GoogLeNet(object):
         dropout_layer = tf.nn.dropout(pool5, self._keep_prob, name = 'dropout')
         fc1 = slim.fully_connected(dropout_layer, self._num_label, scope = 'loss3_classifier')
         self.softmax = tf.nn.softmax(fc1, name = 'class_prob')
+
         
     
     def loadModel(self, sess):
@@ -83,8 +84,6 @@ class GoogLeNet(object):
                         assign_op, feed_dict_init = slim.assign_from_values({name +'/weights:0' : wDict[name][p]})
                         
                     sess.run(assign_op, feed_dict_init)
-               
-
-
-
-            
+    
+    def get_prediction(self):
+        return self.softmax

@@ -138,3 +138,6 @@ class MobileNets(object):
                         assign_op, feed_dict_init = slim.assign_from_values({'MobilenetV1/Mobilenets/' + name +'/' + p +':0' : wDict[name][p]})
                        
                     sess.run(assign_op, feed_dict_init)
+
+    def get_prediction(self):
+        return self.prediction
