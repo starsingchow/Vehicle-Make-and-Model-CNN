@@ -45,7 +45,7 @@ if testImg.values():
     # model = googlenet.GoogLeNet(x, num_label, keep_drop, skip)
     # score = model.softmax
     model = mobilenets.MobileNets(x, num_label, keep_drop, skip)
-    score = model.prediction
+    score = model.get_prediction()
 
     with tf.Session() as sess:
         summary_writer = tf.summary.FileWriter('./CNN/log', sess.graph)

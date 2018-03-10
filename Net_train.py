@@ -168,7 +168,7 @@ def main(argv=None):
     except KeyError as error:
         print('please enter right train type')
     finally:
-        break
+        return
     train(net, net_para, )
 
 
