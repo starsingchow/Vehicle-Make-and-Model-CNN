@@ -27,14 +27,14 @@ class train_para():
         if self.skip == None:
                 self.skip = []
         
-        if train_type == 'full train':
-                self.train_type = 0
-        elif train_type == 'part fune':
-                self.trian_type = 1
-        elif train_type == 'fine tune':
-                self.train_type = 2
-        else:
-                raise ValueError('please input right train type lilk: full trian, part fune fine tune')
+        # if train_type == 'full train':
+        #         self.train_type = 0
+        # elif train_type == 'part fune':
+        #         self.trian_type = 1
+        # elif train_type == 'fine tune':
+        #         self.train_type = 2
+        # else:
+        #         raise ValueError('please input right train type lilk: full trian, part fune fine tune')
 
 
     

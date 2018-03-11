@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import tensorflow as tf
 import numpy as np
 
@@ -14,14 +16,14 @@ import os
 parser = argparse.ArgumentParser()
 parser.add_argument('net_model', choices = ['alexnet', 'googlenet','mobilenet'], default='folder', help='choose net')
 parser.add_argument('train_model', choices = ['finetune', 'fulltrain','parttune'], default='folder', help='choose net')
-parser.add_argument('--label', type=str, defualt='', help = 'input label number')
+parser.add_argument('--label', type=int, default='', help = 'input label number')
 parser.add_argument('--data_dir', type=str, default='', help='input data path')
 parser.add_argument('--model_dir', type=str, default='', help='output model path')
 
 FLAGS, _ = parser.parse_known_args()
 
 args = parser.parse_args()
-NET_TYPE = args.net_type
+NET_TYPE = args.net_model
 LABEL = args.label
 TRAIN_MODEL = args.train_model
 DATA_PATH = args.data_dir
@@ -33,36 +35,38 @@ MODEL_NAME = 'model.ckpt'
 AlexNet_fine_tune_para = train_para(
     image_size = 227, lr = 0.001, lr_decay = 0.1,
     train_steps = 100000, train_type = 'fine tune',
-    train_list = ['fc8']
+    skip = ['fc8'],train_list = ['fc8']
 )
 
 AlexNet_part_tune_para = train_para(
     image_size = 227, lr = 0.001, lr_decay = 0.1,
     train_steps = 80000, train_type = 'part tune',
-    train_list = ['fc8', 'fc6', 'fc5']
+    skip = ['fc8'],train_list = ['fc8', 'fc6', 'fc5']
 )
 
 AlexNet_full_train_para = train_para(
     image_size = 227, lr = 0.001, lr_decay = 0.1,
     train_steps = 100000, train_type = 'full train',
+    skip = ['fc8']
 )
 
 '''GoogLeNet V1'''
 GoogLeNet_fine_tune_para = train_para(
     image_size = 224, lr = 0.0001, lr_decay = 0.96,
     train_steps = 50000, train_type = 'fine tune',
-    train_list = ['loss3_classifier']
+    skip = ['loss3_classifier'], train_list = ['loss3_classifier']
 )
 
 GoogLeNet_part_tune_para = train_para(
     image_size = 224, lr = 0.0001, lr_decay = 0.96,
     train_steps = 50000, train_type = 'part tune',
-    train_list = ['loss3_classifier', 'inception_5b', 'inception_5a']
+    skip = ['loss3_classifier'], train_list = ['loss3_classifier', 'inception_5b', 'inception_5a']
 )
 
 GoogLeNet_full_train_para = train_para(
     image_size = 224, lr = 0.0001, lr_decay = 0.96,
-    train_steps = 50000, train_type = 'full train'
+    train_steps = 50000, train_type = 'full train',
+    skip = ['loss3_classifier'],
 )
 
 '''MobileNet V1 1.0 224'''
@@ -92,12 +96,12 @@ net_paras = {
     'googlenet':{
         'finetune': GoogLeNet_fine_tune_para,
         'parttune': GoogLeNet_part_tune_para,
-        'fulltrain': GoogLeNet_full_trian_para, 
+        'fulltrain': GoogLeNet_full_train_para, 
     },
-    'moblienet':{
+    'mobilenet':{
         'finetune': MobileNet_fine_tune_para,
         'parttune': MobileNet_part_tune_para,
-        'fulltrain': MobileNet_full_trian_para,
+        'fulltrain': MobileNet_full_train_para,
     }
 }
 BATCH_SIZE = 100
@@ -111,7 +115,7 @@ def train(net, net_para, label, keep_prob):
         name = 'input-x'
         )
     y_ = tf.placeholder(
-        tf.float32, 
+        tf.int32, 
         [None],
         name = 'input-y'
     )
@@ -124,7 +128,7 @@ def train(net, net_para, label, keep_prob):
     variable_averages = tf.train.ExponentialMovingAverage(MOVING_AVERAGE_DECAY, global_step)
     variable_averages_op = variable_averages.apply(tf.trainable_variables())
     
-    one_hot_y = tf.one_hot(y_, 10)
+    one_hot_y = tf.one_hot(y_, 100)
     cross_entropy = one_hot_y*tf.log(y+1e10)
 
     cross_entropy_mean = tf.reduce_mean(cross_entropy)
@@ -133,11 +137,11 @@ def train(net, net_para, label, keep_prob):
     learning_rate = tf.train.exponential_decay(
         net_para.lr,
         global_step,
-        550000 / BATCH_SIZE,
+        net_para.train_steps / BATCH_SIZE,
         net_para.lr_decay
     )
 
-    train_step = tf.train.GradientDescentOptimizer(learning_rate)
+    train_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss, global_step=global_step)
 
     with tf.control_dependencies([train_step, variable_averages_op]):
         train_op = tf.no_op(name='train')
@@ -174,9 +178,9 @@ def main(argv=None):
         net_para = net_paras[NET_TYPE][TRAIN_MODEL]
     except KeyError as error:
         print('please enter right train type')
-    finally:
         return
-    train(net, net_para, LABEL)
+
+    train(net, net_para, LABEL, 0.5)
 
 
 if __name__ == '__main__':

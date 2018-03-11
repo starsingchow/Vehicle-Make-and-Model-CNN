@@ -118,7 +118,7 @@ class MobileNets(object):
                             return net, end_points
 
                         end_point = end_point_base + '_pointwise' 
-                        train_able = self._istrian_able(end_point)
+                        train_able = self._istrain_able(end_point)
                         net = slim.conv2d(net, conv_def.depth, [1, 1], 
                                             stride = 1, 
                                             normalizer_fn = slim.batch_norm,

@@ -38,7 +38,7 @@ class GoogLeNet(object):
 
             train_able = self._istrain_able('conv2_3x3_reduce')
             conv2_reduce = slim.conv2d(lrn1, 64, [1, 1], padding = 'VALID', 
-                                        stride = 1, scope = 'conv2_3x3_reduce', trianable = train_able)
+                                        stride = 1, scope = 'conv2_3x3_reduce', trainable = train_able)
             train_able = self._istrain_able('conv2_3x3')
             conv2 = slim.conv2d(conv2_reduce, 192, [3, 3], stride = 1, scope = 'conv2_3x3', trainable = train_able)
             lrn2 = tf.nn.lrn(conv2, depth_radius=2, alpha=2e-05, beta=0.75, name = 'lrn2')
@@ -62,7 +62,7 @@ class GoogLeNet(object):
             train_able = self._istrain_able('inception_4c')
             inception4c = inception_layer(inception4b, 128, 128, 256, 24, 64, 64, name = 'inception_4c', trainable = train_able)
             train_able = self._istrain_able('inception_4d')            
-            inception4d = inception_layer(inception4c, 112, 144, 288, 32, 64, 64, name = 'inception_4d', trianable = train_able) 
+            inception4d = inception_layer(inception4c, 112, 144, 288, 32, 64, 64, name = 'inception_4d', trainable = train_able) 
             train_able = self._istrain_able('inception_4e')
             inception4e = inception_layer(inception4d, 256, 160, 320, 32, 128, 128, name = 'inception_4e', trainable = train_able)
             pool4 = slim.max_pool2d(inception4e, [3, 3], scope = 'max_pool4_3x3_s2', stride = 2)
@@ -70,7 +70,7 @@ class GoogLeNet(object):
             train_able = self._istrain_able('inception_5a')
             inception5a = inception_layer(pool4, 256, 160, 320, 32, 128, 128, name = 'inception_5a', trainable = train_able)
             train_able = self._istrain_able('inception_5b')
-            inception5b = inception_layer(inception5a, 384, 192, 384, 48, 128, 128, name = 'inception_5b', trianable = train_able)
+            inception5b = inception_layer(inception5a, 384, 192, 384, 48, 128, 128, name = 'inception_5b', trainable = train_able)
 
         
         # Branch1: Inception4a -> ArgPool_branch1 5x5+3(V) -> Conv_branch1 1x1+1(S) -> FC1_branch1 -> FC2_branch1 -> softmax0
@@ -101,7 +101,7 @@ class GoogLeNet(object):
                         
                     sess.run(assign_op, feed_dict_init)
     
-        def _istrain_able(self, layer_name):
+    def _istrain_able(self, layer_name):
         if self._train_list == None:
             return True
 

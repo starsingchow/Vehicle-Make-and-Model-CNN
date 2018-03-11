@@ -110,7 +110,7 @@ class AlexNet(object):
     def _lrn(self, x, depth_radius, alpha, beta, name, bias = 1.0):
         return tf.nn.lrn(x, depth_radius = depth_radius, bias = bias, alpha = alpha, beta = beta, name = name)
 
-    def _fc(self, x, num_in, num_out, name, relu = True, trainable = trainable):
+    def _fc(self, x, num_in, num_out, name, relu = True, trainable = True):
         with tf.variable_scope(name) as scope:
             weights = tf.get_variable("weights", shape=[num_in, num_out], trainable=trainable)
             biases = tf.get_variable("biases", shape = [num_out], trainable=trainable)
