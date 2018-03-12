@@ -18,7 +18,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('net_model', choices = ['alexnet', 'googlenet','mobilenet'], default='folder', help='choose net')
 parser.add_argument('train_model', choices = ['finetune', 'fulltrain','parttune'], default='folder', help='choose net')
 parser.add_argument('--label', type=int, default='', help = 'input label number')
-parser.add_argument('--data_dir', type=str, default='', help='input data path')
+parser.add_argument('--car_data', type=str, default='', help='input data path')
 parser.add_argument('--model_dir', type=str, default='', help='output model path')
 
 FLAGS, _ = parser.parse_known_args()
@@ -27,7 +27,7 @@ args = parser.parse_args()
 NET_TYPE = args.net_model
 LABEL = args.label
 TRAIN_MODEL = args.train_model
-DATA_PATH = args.data_dir
+DATA_PATH = args.car_dir
 MODEL_PATH = args.model_dir
 
 MODEL_NAME = 'model.ckpt'
@@ -152,7 +152,7 @@ def train(net, net_para, label, keep_prob):
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
         model.loadModel(sess)
-        data_iterator = get_data('./car_data/save/train', 100)
+        data_iterator = get_data(DATA_PATH, 100)
 
         for i in range(net_para.train_steps):
             xs, ys = data_iterator.get_next()

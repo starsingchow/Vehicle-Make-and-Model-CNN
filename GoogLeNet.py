@@ -17,7 +17,7 @@ class GoogLeNet(object):
         self._skip = skip
         self._train_list = train_list
         if model_path == 'DEFAULT':
-            self.model_path = './CNN/data/googlenet.npy'
+            self.model_path = './data/googlenet.npy'
         else:
             self.weigths_path = model_path
 

@@ -252,5 +252,5 @@ def Brightness(image):
     return brightnessed_image.eval()
 
 if __name__ == '__main__':
-    car_data = pd.read_csv('./CNN/car_information.csv')
+    car_data = pd.read_csv('./car_information.csv')
     data_augmenttation(DIR, car_data, SAVE)
