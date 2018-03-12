@@ -103,7 +103,7 @@ def data_augmenttation(dir, car_data, save):
                 save_type = 'train'
                 if int(name_label['test']) == 1:
                     save_type = 'test'
-                save_name = save + '{0}/Num{1}_label_{2}_'.format(save_type,i,int(name_label['class'])) + key
+                save_name = save + '{0}/num_{1}_label_{2}_'.format(save_type,i,int(name_label['class'])) + key
                 print(save_name)
                 cv2.imwrite(save_name, cropped_image)
                 i += 1

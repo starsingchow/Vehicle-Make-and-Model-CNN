@@ -9,7 +9,7 @@ from GoogLeNet import GoogLeNet
 from MobileNets import MobileNets
 
 from train_para import train_para
-from cifar_data_read import cifar
+from input_data import get_data
 
 import argparse
 import os
@@ -148,16 +148,16 @@ def train(net, net_para, label, keep_prob):
         train_op = tf.no_op(name='train')
     
     saver = tf.train.Saver()
-    cif = cifar(DATA_PATH)
-
+    
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
         model.loadModel(sess)
+        data_iterator = get_data('./car_data/save/train', 100)
 
         for i in range(net_para.train_steps):
-            xs, ys = cif.batch(BATCH_SIZE)
-            ys = ys.reshape(BATCH_SIZE)
-            _, predict, loss_value, step = sess.run([train_op, y, loss, global_step], feed_dict={x: xs, y_: ys})
+            xs, ys = data_iterator.get_next()
+            ys = tf.reshape(ys,[BATCH_SIZE])
+            _, predict, loss_value, step = sess.run([train_op, y, loss, global_step], feed_dict={x: xs.eval(), y_: ys.eval()})
             if i % 100 == 0:
                 print("After {0:d} training step(s), loss on trian batch {1:g}".format(step, loss_value))
                 correct_rate = np.sum(np.argmax(predict,axis=1) == ys,0)/BATCH_SIZE
