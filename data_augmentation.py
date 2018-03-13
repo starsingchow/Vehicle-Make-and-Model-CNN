@@ -22,6 +22,16 @@ def data_augmenttation(dir, car_data, save):
     images = dict((file, [cv2.imread(withPath(file)), car_data.loc[car_data['relative_im_path'] == file, 
             ['bbox_x1','bbox_y1','bbox_x2','bbox_y2']]])
             for file in files if os.path.isfile(withPath(file)) and file != '.DS_Store')
+    test_dir = os.path.join(save, 'test')
+    if not os.path.exists(test_dir):
+        print('--create test file--')
+        os.makedirs(test_dir)
+                
+    train_dir = os.path.join(save, 'train')
+    if not os.path.exists(train_dir):
+        print('--create train file--')
+        os.makedirs(train_dir)
+
     with tf.Session() as sess:
         for key, image in images.items():
             rgb_image = cv2.cvtColor(image[0], cv2.COLOR_BGR2RGB)
@@ -79,12 +89,6 @@ def data_augmenttation(dir, car_data, save):
                 brightness_number = random.sample(range(len(cropped_images)), 1) 
             
             i = 0
-            if not os.path.exists(save+'/test'):
-                os.makedirs(save+'/test')
-            
-            if not os.path.exists(save+'/train'):
-                os.makedirs(save+'/train')
-
             for cropped_image in cropped_images:
                 if i not in save_number:
                     i +=1
@@ -100,10 +104,10 @@ def data_augmenttation(dir, car_data, save):
 
                 cropped_image = cv2.cvtColor(cropped_image, cv2.COLOR_RGB2BGR)
                 name_label = car_data.loc[car_data['relative_im_path'] == key, ['class', 'test']]
-                save_type = 'train'
+                save_dir= train_dir
                 if int(name_label['test']) == 1:
-                    save_type = 'test'
-                save_name = save + '{0}/num_{1}_label_{2}_'.format(save_type,i,int(name_label['class'])) + key
+                    save_dir = test_dir
+                save_name = save_dir + '/num_{0}_label_{1}_'.format(i,int(name_label['class'])) + key
                 print(save_name)
                 cv2.imwrite(save_name, cropped_image)
                 i += 1
