@@ -47,6 +47,7 @@ def data_augmenttation(dir, car_data, save):
                 file_name  =  '/num_1_label_{0}_'.format(int(name_label['class'])) + key
                 save_name = os.path.join(save_dir, key)
                 cv2.imwrite(save_name, squash_image)
+                continue
 
             # print(squash_image.shape)
             # cv2.imshow('a', cv2.cvtColor(squash_image, cv2.COLOR_RGB2BGR))
