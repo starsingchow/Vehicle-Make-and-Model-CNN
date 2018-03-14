@@ -134,7 +134,7 @@ def train(net, net_para, label, keep_prob):
 
     cross_entropy_mean = tf.reduce_mean(cross_entropy)
     loss = cross_entropy_mean
-
+    
     learning_rate = tf.train.exponential_decay(
         net_para.lr,
         global_step,

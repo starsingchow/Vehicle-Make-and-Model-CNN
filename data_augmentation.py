@@ -44,7 +44,7 @@ def data_augmenttation(dir, car_data, save):
             save_dir= train_dir
             if int(name_label['test']) == 1:
                 save_dir = test_dir
-                file_name = '/num_1_label_{0}_'.format(int(name_label['class'])) + key
+                file_name = 'num_1_label_{0}_'.format(int(name_label['class'])) + key
                 save_name = os.path.join(save_dir, file_name)
                 cv2.imwrite(save_name, squash_image)
                 print(save_name)
