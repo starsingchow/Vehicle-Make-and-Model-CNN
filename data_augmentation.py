@@ -159,19 +159,19 @@ def bbox_crop(image, bbox_crop):
     #         y2 = image_shape[0]
     #     return image[y1:y2, x1:x2, :]
 
-    x1 = bbox_crop['bbox_x1'].get_values()[0] - 16
+    x1 = bbox_crop['bbox_x1'].get_values()[0] - 18
     if x1 < 0:
         x1 = 0
 
-    x2 = bbox_crop['bbox_x2'].get_values()[0] + 16
+    x2 = bbox_crop['bbox_x2'].get_values()[0] + 18
     if x2 > image_shape[1]:
         x2 = image_shape[1]
 
-    y1 = bbox_crop['bbox_y1'].get_values()[0] - 16
+    y1 = bbox_crop['bbox_y1'].get_values()[0] - 18
     if y1 < 0:
         y1 = 0
 
-    y2 = bbox_crop['bbox_y2'].get_values()[0] + 16
+    y2 = bbox_crop['bbox_y2'].get_values()[0] + 18
     if y2 > image_shape[0]:
         y2 = image_shape[0]
     return image[y1:y2, x1:x2, :]
