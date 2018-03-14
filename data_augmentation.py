@@ -39,6 +39,15 @@ def data_augmenttation(dir, car_data, save):
             bbox_image = bbox_crop(rgb_image, bbox)
             # print(bbox_image.shape)
             squash_image = Squash(bbox_image)
+
+            name_label = car_data.loc[car_data['relative_im_path'] == key, ['class', 'test']]
+            save_dir= train_dir
+            if int(name_label['test']) == 1:
+                save_dir = test_dir
+                save_name = os.path.join(save_dir, key)
+                cv2.imwrite(save_name, squash_image)
+                
+
             # print(squash_image.shape)
             # cv2.imshow('a', cv2.cvtColor(squash_image, cv2.COLOR_RGB2BGR))
             # cv2.waitKey(0)
@@ -103,10 +112,6 @@ def data_augmenttation(dir, car_data, save):
                     cropped_image = EdgeEnhance(cropped_image)
 
                 cropped_image = cv2.cvtColor(cropped_image, cv2.COLOR_RGB2BGR)
-                name_label = car_data.loc[car_data['relative_im_path'] == key, ['class', 'test']]
-                save_dir= train_dir
-                if int(name_label['test']) == 1:
-                    save_dir = test_dir
                 save_name = save_dir + '/num_{0}_label_{1}_'.format(i,int(name_label['class'])) + key
                 print(save_name)
                 cv2.imwrite(save_name, cropped_image)
