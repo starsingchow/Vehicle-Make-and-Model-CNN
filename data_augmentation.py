@@ -45,7 +45,7 @@ def data_augmenttation(dir, car_data, save):
             if int(name_label['test']) == 1:
                 save_dir = test_dir
                 file_name  =  '/num_1_label_{0}_'.format(int(name_label['class'])) + key
-                save_name = os.path.join(save_dir, key)
+                save_name = os.path.join(save_dir, file_name)
                 cv2.imwrite(save_name, squash_image)
                 continue
 
@@ -114,9 +114,9 @@ def data_augmenttation(dir, car_data, save):
 
                 cropped_image = cv2.cvtColor(cropped_image, cv2.COLOR_RGB2BGR)
                 save_name = save_dir + '/num_{0}_label_{1}_'.format(i,int(name_label['class'])) + key
-                print(save_name)
                 cv2.imwrite(save_name, cropped_image)
                 i += 1
+            print('finsh {0} {1}'.format(int(name_label['test']), key))
             
 def bbox_crop(image, bbox_crop):
     image_shape = image.shape
