@@ -158,7 +158,7 @@ def train(net, net_para, label, keep_prob):
             xs, ys = data_iterator.get_next()
             ys = tf.reshape(ys,[BATCH_SIZE])
             _, predict, loss_value, step = sess.run([train_op, y, loss, global_step], feed_dict={x: xs.eval(), y_: ys.eval()})
-            if i % 100 == 0:
+            if i % 1000 == 0:
                 print("After {0:d} training step(s), loss on trian batch {1:g}".format(step, loss_value))
                 correct_rate = np.sum(np.argmax(predict,axis=1) == ys,0)/BATCH_SIZE
                 print("After {0:d} training step(s), correct rate on trian batch {1:s}".format(step, str(correct_rate.astype(np.float))))
