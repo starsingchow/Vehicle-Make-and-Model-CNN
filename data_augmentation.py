@@ -90,7 +90,8 @@ def data_augmenttation(dir, car_data, save):
             print('finsh crop')
             random.seed(12345)
             try:
-                save_number = random.sample(range(2,len(cropped_images)), 6)
+                save_number = random.sample(range(2,len(cropped_images)), 4)
+                print(save_number)
                 EdgeEnhance_number = random.sample(range(2,len(cropped_images)), 2)
                 colorJittering_number = random.sample(range(2,len(cropped_images)), 3)
                 brightness_number = random.sample(range(2,len(cropped_images)), 3) 
