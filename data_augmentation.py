@@ -84,11 +84,11 @@ def data_augmenttation(dir, car_data, save):
 
             cropped_images = []
             for result in results:
-                cropped = RandomCrop(result, 3)
+                cropped = RandomCrop(result, 2)
                 cropped_images += cropped
             
             print('finsh crop')
-            random.seed(12345)
+            random.seed(666)
             try:
                 save_number = random.sample(range(1,len(cropped_images)), 5)
                 EdgeEnhance_number = random.sample(range(1,len(cropped_images)), 2)
