@@ -92,7 +92,7 @@ def data_augmenttation(dir, car_data, save):
             try:
                 save_number = random.sample(range(2,len(cropped_images)), 6)
                 EdgeEnhance_number = random.sample(range(2,len(cropped_images)), 2)
-                colorJittering_number = random.sample(2,range(len(cropped_images)), 3)
+                colorJittering_number = random.sample(range(2,len(cropped_images)), 3)
                 brightness_number = random.sample(range(2,len(cropped_images)), 3) 
             except ValueError:
                 save_number = []
