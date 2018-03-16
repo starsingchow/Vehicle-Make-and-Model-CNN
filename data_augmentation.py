@@ -102,7 +102,7 @@ def data_augmenttation(dir, car_data, save):
             
             i = 0
             for cropped_image in cropped_images:
-                if i not in save_number and i != 1 and i != 0:
+                if i not in save_number and i != 0:
                     i +=1
                     continue
                 if i in brightness_number:
