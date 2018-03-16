@@ -90,10 +90,10 @@ def data_augmenttation(dir, car_data, save):
             print('finsh crop')
             random.seed(12345)
             try:
-                save_number = random.sample(range(len(cropped_images)), 6)
-                EdgeEnhance_number = random.sample(range(len(cropped_images)), 2)
-                colorJittering_number = random.sample(range(len(cropped_images)), 3)
-                brightness_number = random.sample(range(len(cropped_images)), 3) 
+                save_number = random.sample(range(2:len(cropped_images)), 6)
+                EdgeEnhance_number = random.sample(range(2:len(cropped_images)), 2)
+                colorJittering_number = random.sample(2:range(len(cropped_images)), 3)
+                brightness_number = random.sample(range(2:len(cropped_images)), 3) 
             except ValueError:
                 save_number = []
                 EdgeEnhance_number = random.sample(range(len(cropped_images)), 1)
@@ -102,7 +102,7 @@ def data_augmenttation(dir, car_data, save):
             
             i = 0
             for cropped_image in cropped_images:
-                if i not in save_number:
+                if i not in save_number and i != 1 and i != 0:
                     i +=1
                     continue
                 if i in brightness_number:

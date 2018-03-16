@@ -133,8 +133,12 @@ def train(net, net_para, label, keep_prob):
     cross_entropy = one_hot_y*tf.log(y+1e10)
 
     cross_entropy_mean = tf.reduce_mean(cross_entropy)
-    loss = cross_entropy_mean
-    
+    with tf.name_scope('loss'):
+        loss = cross_entropy_mean
+        tf.summary.scalar('loss', loss)
+
+    with tf.name_scope('ac')
+
     learning_rate = tf.train.exponential_decay(
         net_para.lr,
         global_step,
@@ -150,10 +154,12 @@ def train(net, net_para, label, keep_prob):
     saver = tf.train.Saver()
     
     with tf.Session() as sess:
+        summary_writer = tf.summary.FileWriter(log_dir, sess.graph)
+
         sess.run(tf.global_variables_initializer())
         model.loadModel(sess)
         data_iterator = get_data(DATA_PATH, 100)
-
+        
         for i in range(net_para.train_steps):
             xs, ys = data_iterator.get_next()
             ys = tf.reshape(ys,[BATCH_SIZE])
