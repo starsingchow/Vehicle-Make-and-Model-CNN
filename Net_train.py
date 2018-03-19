@@ -142,6 +142,7 @@ def train(net, net_para, label, keep_prob):
         tf.summary.scalar('loss', loss)
 
     with tf.name_scope('accuracy'):
+        print(y.shape)
         correct_rate = np.sum(np.argmax(y,axis=1) == y_,0)/BATCH_SIZE
         tf.summary.scalar('accuracy', correct_rate)
 
