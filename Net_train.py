@@ -115,6 +115,7 @@ NUMBER_CHANNEL = 3
 MOVING_AVERAGE_DECAY = 0.99
 def train(net, net_para, label, keep_prob):
     data_iterator = get_data(DATA_PATH, 100)
+    next_element = iterator.get_next()
     x_mean = np.load('./Vehicle-Make-and-Model-CNN/data/'+MEAN_VALUE)
     x = tf.placeholder(
         tf.float32,
@@ -172,7 +173,7 @@ def train(net, net_para, label, keep_prob):
         model.loadModel(sess)
         
         for i in range(net_para.train_steps):
-            xs, ys = data_iterator.get_next()
+            xs, ys = next_element
             ys = tf.reshape(ys,[BATCH_SIZE])
             x_input, y_input = sess.run([xs,ys])
             x_input -= x_mean
