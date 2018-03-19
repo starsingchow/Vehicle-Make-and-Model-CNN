@@ -174,7 +174,7 @@ def train(net, net_para, label, keep_prob):
         for i in range(net_para.train_steps):
             xs, ys = data_iterator.get_next()
             ys = tf.reshape(ys,[BATCH_SIZE])
-            x_input, y_input = sess.run(xs,ys)
+            x_input, y_input = sess.run([xs,ys])
             x_input -= x_mean
             y_input -= 1
             _, rate, loss_value, step, summary= sess.run([train_op, correct_rate, loss, global_step, merged], feed_dict={x: x_input, y_: y_input})
