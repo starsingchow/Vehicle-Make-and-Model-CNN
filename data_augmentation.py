@@ -293,9 +293,9 @@ def Brightness(image):
 
 if __name__ == '__main__':
     '''use in ec2'''
-    # car_data = pd.read_csv('./Vehicle-Make-and-Model-CNN/car_information.csv')
+    car_data = pd.read_csv('./Vehicle-Make-and-Model-CNN/car_information.csv')
     start = datetime.datetime.now()
-    car_data = pd.read_csv('./CNN/car_information.csv')
+    # car_data = pd.read_csv('./CNN/car_information.csv')
     data_augmenttation(DIR, car_data, SAVE)
     end = datetime.datetime.now()
     print(end-start)
