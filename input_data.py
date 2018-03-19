@@ -26,7 +26,7 @@ import os
 def get_label(filename):
     # filename: num_x_label_x_xxxxx.jpg
     name_split = filename.split('_')
-    label = name_split[2]
+    label = name_split[3]
     return int(label)
 
 # def get_data(dir, BATCH_SIZE):

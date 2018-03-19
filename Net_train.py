@@ -133,7 +133,7 @@ def train(net, net_para, label, keep_prob):
     variable_averages = tf.train.ExponentialMovingAverage(MOVING_AVERAGE_DECAY, global_step)
     variable_averages_op = variable_averages.apply(tf.trainable_variables())
     
-    one_hot_y = tf.one_hot(y_, 100)
+    one_hot_y = tf.one_hot(y_, LABEL)
     cross_entropy = one_hot_y*tf.log(y+1e10)
 
     cross_entropy_mean = tf.reduce_mean(cross_entropy)
