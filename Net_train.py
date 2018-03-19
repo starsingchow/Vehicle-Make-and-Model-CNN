@@ -17,10 +17,10 @@ import os
 parser = argparse.ArgumentParser()
 parser.add_argument('net_model', choices = ['alexnet', 'googlenet','mobilenet'], default='folder', help='choose net')
 parser.add_argument('train_model', choices = ['finetune', 'fulltrain','parttune'], default='folder', help='choose net')
-parser.add_argument('--label', type=int, default='', help = 'input label number')
+parser.add_argument('--label', type=int, default='', help ='input label number')
 parser.add_argument('--car_data', type=str, default='', help='input data path')
 parser.add_argument('--model_dir', type=str, default='', help='output model path')
-
+parser.add_argument('--log_dir', type=str, default='', help ='log path')
 FLAGS, _ = parser.parse_known_args()
 
 args = parser.parse_args()
@@ -29,7 +29,9 @@ LABEL = args.label
 TRAIN_MODEL = args.train_model
 DATA_PATH = args.car_dir
 MODEL_PATH = args.model_dir
+LOG_DIR = args.log_dir
 
+MEAN_VALUE = 'mean224.npy'
 MODEL_NAME = 'model.ckpt'
 
 '''AlexNet'''
@@ -109,6 +111,8 @@ BATCH_SIZE = 100
 NUMBER_CHANNEL = 3
 MOVING_AVERAGE_DECAY = 0.99
 def train(net, net_para, label, keep_prob):
+    data_iterator = get_data(DATA_PATH, 100)
+    x_mean = np.load('./Vehicle-Make-and-Model-CNN/data/'+MEAN_VALUE)
     x = tf.placeholder(
         tf.float32,
         [BATCH_SIZE, net_para.image_size, 
@@ -137,43 +141,51 @@ def train(net, net_para, label, keep_prob):
         loss = cross_entropy_mean
         tf.summary.scalar('loss', loss)
 
-    with tf.name_scope('ac')
+    with tf.name_scope('accuracy'):
+        correct_rate = np.sum(np.argmax(y,axis=1) == y_,0)/BATCH_SIZE
+        tf.summary.scalar('accuracy', correct_rate)
 
-    learning_rate = tf.train.exponential_decay(
-        net_para.lr,
-        global_step,
-        net_para.train_steps / BATCH_SIZE,
-        net_para.lr_decay
-    )
+    # learning_rate = tf.train.exponential_decay(
+    #     net_para.lr,
+    #     global_step,
+    #     net_para.train_steps / BATCH_SIZE,
+    #     net_para.lr_decay
+    # )
 
-    train_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss, global_step=global_step)
+    # train_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss, global_step=global_step)
+    train_step = tf.train.RMSPropOptimizer(net_para.lr, net_para.lr_decay).minimize(loss, global_step=global_step)
 
     with tf.control_dependencies([train_step, variable_averages_op]):
         train_op = tf.no_op(name='train')
     
     saver = tf.train.Saver()
     
-    with tf.Session() as sess:
-        summary_writer = tf.summary.FileWriter(log_dir, sess.graph)
+    merged = tf.summary.merge_all()
 
+    with tf.Session() as sess:
+        summary_writer = tf.summary.FileWriter(LOG_DIR, sess.graph)
         sess.run(tf.global_variables_initializer())
         model.loadModel(sess)
-        data_iterator = get_data(DATA_PATH, 100)
         
         for i in range(net_para.train_steps):
             xs, ys = data_iterator.get_next()
             ys = tf.reshape(ys,[BATCH_SIZE])
-            _, predict, loss_value, step = sess.run([train_op, y, loss, global_step], feed_dict={x: xs.eval(), y_: ys.eval()})
+            x_input, y_input = sess.run(xs,ys)
+            x_input -= x_mean
+            y_input -= 1
+            _, rate, loss_value, step, summary= sess.run([train_op, correct_rate, loss, global_step, merged], feed_dict={x: x_input, y_: y_input})
             if i % 1000 == 0:
                 print("After {0:d} training step(s), loss on trian batch {1:g}".format(step, loss_value))
-                correct_rate = np.sum(np.argmax(predict,axis=1) == ys,0)/BATCH_SIZE
-                print("After {0:d} training step(s), correct rate on trian batch {1:s}".format(step, str(correct_rate.astype(np.float))))
-        
+                print("After {0:d} training step(s), correct rate on trian batch {1:s}".format(step, str(rate.astype(np.float))))
+            summary_writer.add_summary(summary,i)
+
+        summary_writer.close()
         saver.save(sess, os.path.join(MODEL_PATH, MODEL_NAME), global_step=global_step)
 
 def main(argv=None):
     if NET_TYPE == 'alexnet':
         net = AlexNet
+        MEAN_VALUE = 'mean227.npy'
     elif NET_TYPE == 'googlenet':
         net = GoogLeNet
     elif NET_TYPE == 'mobilenet':
