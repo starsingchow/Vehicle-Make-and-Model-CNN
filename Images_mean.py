@@ -6,10 +6,12 @@ import sys
 
 parser = argparse.ArgumentParser(description='compute image mean.')
 parser.add_argument('--dir', type = str, default='', help = 'input data')
+parser.add_argument('--save', type = str, default='', help = 'save data')
 args = parser.parse_args(sys.argv[1:])
 DIR = args.dir
+SAVE = args.save
 
-def image_mean(dir):
+def image_mean(dir, save):
     list = os.listdir(dir)
     list = [os.path.join(dir, file) for file in list if file != '.DS_Store']
     img_size = 227
@@ -31,7 +33,7 @@ def image_mean(dir):
     sum_g=sum_g/count
     sum_b=sum_b/count
     img_mean=[sum_r,sum_g,sum_b]
-    np.save('mean.npy', img_mean)
+    np.save(os.path.join(save,'mean.npy'), img_mean)
 
 if __name__ == '__main__':
-    image_mean(DIR)
+    image_mean(DIR,SAVE)
