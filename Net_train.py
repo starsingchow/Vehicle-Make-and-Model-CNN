@@ -115,7 +115,7 @@ NUMBER_CHANNEL = 3
 MOVING_AVERAGE_DECAY = 0.99
 def train(net, net_para, label, keep_prob):
     data_iterator = get_data(DATA_PATH, 100)
-    x_mean = np.load('./Vehicle-Make-and-Model-CNN/data/'+MEAN_VALUE)
+    x_mean = np.load('~/Vehicle-Make-and-Model-CNN/data/'+MEAN_VALUE)
     x = tf.placeholder(
         tf.float32,
         [BATCH_SIZE, net_para.image_size, 
@@ -145,7 +145,8 @@ def train(net, net_para, label, keep_prob):
         tf.summary.scalar('loss', loss)
 
     with tf.name_scope('accuracy'):
-        correct_rate = np.sum(np.argmax(y,axis=1) == y_,0)/BATCH_SIZE
+        correct_prediction = tf.equal(tf.argmax(y,axis=1),y_)
+        correct_rate = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
         tf.summary.scalar('accuracy', correct_rate)
 
     # learning_rate = tf.train.exponential_decay(
