@@ -32,6 +32,9 @@ MODEL_PATH = args.model_dir
 LOG_DIR = args.log_dir
 
 MEAN_VALUE = 'mean224.npy'
+if NET_TYPE == 'alexnet':
+    MEAN_VALUE = 'mean227.npy'
+
 MODEL_NAME = 'model.ckpt'
 
 '''AlexNet'''
@@ -142,7 +145,6 @@ def train(net, net_para, label, keep_prob):
         tf.summary.scalar('loss', loss)
 
     with tf.name_scope('accuracy'):
-        print(y.shape)
         correct_rate = np.sum(np.argmax(y,axis=1) == y_,0)/BATCH_SIZE
         tf.summary.scalar('accuracy', correct_rate)
 
@@ -186,7 +188,6 @@ def train(net, net_para, label, keep_prob):
 def main(argv=None):
     if NET_TYPE == 'alexnet':
         net = AlexNet
-        MEAN_VALUE = 'mean227.npy'
     elif NET_TYPE == 'googlenet':
         net = GoogLeNet
     elif NET_TYPE == 'mobilenet':
