@@ -13,6 +13,10 @@ def fancy_pca(dir,save):
         file_dir = os.path.join(dir, file)
         image = cv2.imread(file_dir)
         image = image.astype(np.float64)
+        image.reshape = 
+        img -= np.mean(img, axis=0)
+        cov = np.dot(img.T, img)/(img.shape[0] - 1)
+        val, vect = np.linalg.eig(cov)
 
         alpha = np.random.normal(loc=0.0, scale =1.0, size=(3,))
         weights = alpha * val
@@ -33,13 +37,6 @@ def fancy_pca(dir,save):
                 pixel[1] = int(pixel[1])
                 pixel[2] += b_num
                 pixel[2] = int(pixel[2])
-        
-
-def pca(img):
-    img -= np.mean(img, axis=0)
-    cov = np.dot(img.T, img)/(img.shape[0] - 1)
-    val, vect = np.linalg.eig(cov)
-    return val, vect
 
 if __name__=='__main__':
     fancy_pca(dir, save)
