@@ -86,24 +86,17 @@ def data_augmenttation(dir, car_data, save):
         for result in results:
             cropped = RandomCrop(result, 2)
             cropped_images += cropped
-            
+        random.seed(2233)
         # print('finsh crop')
         try:
-            random.seed(666)
-            save_number = random.sample(range(1,len(cropped_images)), 5)
-            random.seed(245)
-            EdgeEnhance_number = random.sample(range(1,len(cropped_images)), 2)
-            random.seed(124)
-            colorJittering_number = random.sample(range(1,len(cropped_images)), 3)
-            random.seed(169)
-            brightness_number = random.sample(range(1,len(cropped_images)), 3) 
+            save_number = random.sample(range(2,len(cropped_images)), 5)
+            EdgeEnhance_number = random.sample(range(2,len(cropped_images)),2)
+            colorJittering_number = random.sample(range(1,len(cropped_images),2), 2)
+            brightness_number = random.sample(range(2,len(cropped_images),2), 2) 
         except ValueError:
             save_number = []
-            random.seed(666)
             EdgeEnhance_number = random.sample(range(len(cropped_images)), 1)
-            random.seed(124)
             colorJittering_number = random.sample(range(len(cropped_images)), 1)
-            random.seed(169)
             brightness_number = random.sample(range(len(cropped_images)), 1) 
             
         i = 0
@@ -293,9 +286,9 @@ def Brightness(image):
 
 if __name__ == '__main__':
     '''use in ec2'''
-    car_data = pd.read_csv('./Vehicle-Make-and-Model-CNN/car_information.csv')
+    # car_data = pd.read_csv('./Vehicle-Make-and-Model-CNN/car_information.csv')
     start = datetime.datetime.now()
-    # car_data = pd.read_csv('./CNN/car_information.csv')
+    car_data = pd.read_csv('./CNN/car_information.csv')
     data_augmenttation(DIR, car_data, SAVE)
     end = datetime.datetime.now()
     print(end-start)
