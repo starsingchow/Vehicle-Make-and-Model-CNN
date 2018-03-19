@@ -123,7 +123,7 @@ def train(net, net_para, label, keep_prob):
         name = 'input-x'
         )
     y_ = tf.placeholder(
-        tf.int32, 
+        tf.int64, 
         [None],
         name = 'input-y'
     )
