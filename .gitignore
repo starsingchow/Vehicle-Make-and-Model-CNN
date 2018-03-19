@@ -104,3 +104,4 @@ ENV/
 test/
 data/
 log/
+save_model/
