@@ -8,6 +8,7 @@ import os
 import sys
 import random
 import argparse
+import datetime
 
 parser = argparse.ArgumentParser(description='Data Augmentation.')
 parser.add_argument('--dir', type = str, default='', help = 'input_data')
@@ -32,94 +33,99 @@ def data_augmenttation(dir, car_data, save):
         print('--create train file--')
         os.makedirs(train_dir)
 
-    with tf.Session() as sess:
-        for key, image in images.items():
-            rgb_image = cv2.cvtColor(image[0], cv2.COLOR_BGR2RGB)
-            bbox = image[1]
-            bbox_image = bbox_crop(rgb_image, bbox)
-            # print(bbox_image.shape)
-            squash_image = Squash(bbox_image)
+    for key, image in images.items():
+        rgb_image = cv2.cvtColor(image[0], cv2.COLOR_BGR2RGB)
+        bbox = image[1]
+        bbox_image = bbox_crop(rgb_image, bbox)
+        # print(bbox_image.shape)
+        squash_image = Squash(bbox_image)
 
-            name_label = car_data.loc[car_data['relative_im_path'] == key, ['class', 'test']]
-            save_dir= train_dir
-            if int(name_label['test']) == 1:
-                save_dir = test_dir
-                file_name = 'num_1_label_{0}_'.format(int(name_label['class'])) + key
-                save_name = os.path.join(save_dir, file_name)
-                cv2.imwrite(save_name, squash_image)
-                print(save_name)
-                print('finsh test {0}'.format(key))
-                continue
+        name_label = car_data.loc[car_data['relative_im_path'] == key, ['class', 'test']]
+        save_dir= train_dir
+        if int(name_label['test']) == 1:
+            save_dir = test_dir
+            file_name = 'num_1_label_{0}_'.format(int(name_label['class'])) + key
+            save_name = os.path.join(save_dir, file_name)
+            cv2.imwrite(save_name, squash_image)
+            # print(save_name)
+            # print('finsh test {0}'.format(key))
+            continue
 
-            # print(squash_image.shape)
-            # cv2.imshow('a', cv2.cvtColor(squash_image, cv2.COLOR_RGB2BGR))
-            # cv2.waitKey(0)
-            # cv2.destroyAllWindows
-            # squash_image =Squash(rgb_image)
-            flipped_image = RandomFlip(squash_image)
+        # print(squash_image.shape)
+        # cv2.imshow('a', cv2.cvtColor(squash_image, cv2.COLOR_RGB2BGR))
+        # cv2.waitKey(0)
+        # cv2.destroyAllWindows
+        # squash_image =Squash(rgb_image)
+        flipped_image = RandomFlip(squash_image)
             
-            results = [squash_image] + [flipped_image]
+        results = [squash_image] + [flipped_image]
 
-            ratio_results = []
-            for result in results:
-                ratio_images = RandomRatio(result, 1)
-                ratio_results += ratio_images
-            results +=  ratio_results
+        ratio_results = []
+        for result in results:
+            ratio_images = RandomRatio(result, 1)
+            ratio_results += ratio_images
+        results +=  ratio_results
 
-            print('finsh ratio')
-            # brightness_results = []
-            # for result in results:
-            #     brightness = Brightness(result, 2)
-            #     brightness_results += brightness
-            # results += brightness_results
+        # print('finsh ratio')
+        # brightness_results = []
+        # for result in results:
+        #     brightness = Brightness(result, 2)
+        #     brightness_results += brightness
+        # results += brightness_results
 
-            # print('finsh brightness')
+        # print('finsh brightness')
 
-            # colorJittering_results = []
-            # for result in results:
-            #     colorJittering = ColorJittering(result, 3)
-            #     colorJittering_results += colorJittering
-            # results += colorJittering_results
-            # print('finsh colorJittering')
+        # colorJittering_results = []
+        # for result in results:
+        #     colorJittering = ColorJittering(result, 3)
+        #     colorJittering_results += colorJittering
+        # results += colorJittering_results
+        # print('finsh colorJittering')
 
-            cropped_images = []
-            for result in results:
-                cropped = RandomCrop(result, 2)
-                cropped_images += cropped
+        cropped_images = []
+        for result in results:
+            cropped = RandomCrop(result, 2)
+            cropped_images += cropped
             
-            print('finsh crop')
+        # print('finsh crop')
+        try:
             random.seed(666)
-            try:
-                save_number = random.sample(range(1,len(cropped_images)), 5)
-                EdgeEnhance_number = random.sample(range(1,len(cropped_images)), 2)
-                colorJittering_number = random.sample(range(1,len(cropped_images)), 3)
-                brightness_number = random.sample(range(1,len(cropped_images)), 3) 
-            except ValueError:
-                save_number = []
-                EdgeEnhance_number = random.sample(range(len(cropped_images)), 1)
-                colorJittering_number = random.sample(range(len(cropped_images)), 1)
-                brightness_number = random.sample(range(len(cropped_images)), 1) 
+            save_number = random.sample(range(1,len(cropped_images)), 5)
+            random.seed(245)
+            EdgeEnhance_number = random.sample(range(1,len(cropped_images)), 2)
+            random.seed(124)
+            colorJittering_number = random.sample(range(1,len(cropped_images)), 3)
+            random.seed(169)
+            brightness_number = random.sample(range(1,len(cropped_images)), 3) 
+        except ValueError:
+            save_number = []
+            random.seed(666)
+            EdgeEnhance_number = random.sample(range(len(cropped_images)), 1)
+            random.seed(124)
+            colorJittering_number = random.sample(range(len(cropped_images)), 1)
+            random.seed(169)
+            brightness_number = random.sample(range(len(cropped_images)), 1) 
             
-            i = 0
-            for cropped_image in cropped_images:
-                if i not in save_number and i != 0:
-                    i +=1
-                    continue
-                if i in brightness_number:
-                    cropped_image = Brightness(cropped_image)
+        i = 0
+        for cropped_image in cropped_images:
+            if i not in save_number and i != 0:
+                i +=1
+                continue
+            if i in brightness_number:
+                cropped_image = Brightness(cropped_image)
 
-                if i in colorJittering_number:
-                    cropped_image = ColorJittering(cropped_image)
+            if i in colorJittering_number:
+                cropped_image = ColorJittering(cropped_image)
 
-                if i in EdgeEnhance_number and i not in colorJittering_number:
+            if i in EdgeEnhance_number and i not in colorJittering_number:
                     cropped_image = EdgeEnhance(cropped_image)
 
-                cropped_image = cv2.cvtColor(cropped_image, cv2.COLOR_RGB2BGR)
-                save_name = save_dir + '/num_{0}_label_{1}_'.format(i,int(name_label['class'])) + key
-                print(save_name)
-                cv2.imwrite(save_name, cropped_image)
-                i += 1
-            print('finsh train {0}'.format(key))
+            cropped_image = cv2.cvtColor(cropped_image, cv2.COLOR_RGB2BGR)
+            save_name = save_dir + '/num_{0}_label_{1}_'.format(i,int(name_label['class'])) + key
+            # print(save_name)
+            cv2.imwrite(save_name, cropped_image)
+            i += 1
+        # print('finsh train {0}'.format(key))
     
     print('finish data augmentation')
             
@@ -194,15 +200,23 @@ def Squash(image):
     
     # x = int(image_shape[0] * ratio)
     # y = int(image_shape[1] * ratio)
-    resized = tf.image.resize_images(image, [256, 256], method = 0)
-    return resized.eval()
+    tf.reset_default_graph()
+    with tf.Session() as sess:
+        resized = tf.image.resize_images(image, [256, 256], method = 0)
+        eval = sess.run(resized)
+    tf.get_default_graph().finalize()
+    return eval
 
 def RandomCrop(image, numbers):
     h, w, c = image.shape
     croped_images = []
+    tf.reset_default_graph()
     if h <= 227 and w <= 227:
-        pad = tf.image.resize_image_with_crop_or_pad(image, 227, 227)
-        return [pad.eval()]
+        with tf.Session() as sess:
+            pad = tf.image.resize_image_with_crop_or_pad(image, 227, 227)
+            eval = sess.run(pad)
+        tf.get_default_graph().finalize()
+        return eval
     elif h <= 227:
         image = tf.image.resize_image_with_crop_or_pad(image, 227, w)
         numbers = 1
@@ -211,8 +225,11 @@ def RandomCrop(image, numbers):
         numbers = 1
 
     for i in range(numbers):
-        croped_image = tf.random_crop(image, [227, 227, 3],seed = 12345)  
-        croped_images.append(croped_image.eval())
+        croped_image = tf.random_crop(image, [227, 227, 3],seed = 345)  
+        with tf.Session() as sess:
+            crop_eval = sess.run(croped_image)
+        croped_images.append(crop_eval)
+    tf.get_default_graph().finalize()
     return croped_images
 
 def RandomRatio(image, numbers):
@@ -224,8 +241,12 @@ def RandomRatio(image, numbers):
     return ratios_images
 
 def RandomFlip(image):
-    flipped_image = tf.image.flip_left_right(image)
-    return flipped_image.eval()
+    tf.reset_default_graph()
+    with tf.Session() as sess:
+        flipped_image = tf.image.flip_left_right(image)
+        eval = sess.run(flipped_image)
+    tf.get_default_graph().finalize()
+    return eval
 
 '''return list'''
 # def ColorJittering(image, numbers):
@@ -263,9 +284,18 @@ def EdgeEnhance(image):
 
 '''return only one'''
 def Brightness(image):
-    brightnessed_image = tf.image.random_brightness(image, 0.5, seed=12345)
-    return brightnessed_image.eval()
+    tf.reset_default_graph()
+    with tf.Session() as sess:
+        brightnessed_image = tf.image.random_brightness(image, 0.5, seed=2233)
+        eval = sess.run(brightnessed_image)
+    tf.get_default_graph().finalize()
+    return eval
 
 if __name__ == '__main__':
-    car_data = pd.read_csv('./Vehicle-Make-and-Model-CNN/car_information.csv')
+    '''use in ec2'''
+    # car_data = pd.read_csv('./Vehicle-Make-and-Model-CNN/car_information.csv')
+    start = datetime.datetime.now()
+    car_data = pd.read_csv('./CNN/car_information.csv')
     data_augmenttation(DIR, car_data, SAVE)
+    end = datetime.datetime.now()
+    print(end-start)
