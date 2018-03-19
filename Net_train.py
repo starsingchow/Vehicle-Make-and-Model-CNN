@@ -27,7 +27,7 @@ args = parser.parse_args()
 NET_TYPE = args.net_model
 LABEL = args.label
 TRAIN_MODEL = args.train_model
-DATA_PATH = args.car_dir
+DATA_PATH = args.car_data
 MODEL_PATH = args.model_dir
 LOG_DIR = args.log_dir
 
