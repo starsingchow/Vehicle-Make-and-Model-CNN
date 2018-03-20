@@ -131,7 +131,7 @@ def train(net, net_para, label, keep_prob):
 
     model = net(x, label, keep_prob, net_para.skip)
     y = model.get_prediction()
-
+    print(y.shape)
     global_step = tf.Variable(0, trainable = False)
 
     variable_averages = tf.train.ExponentialMovingAverage(MOVING_AVERAGE_DECAY, global_step)
