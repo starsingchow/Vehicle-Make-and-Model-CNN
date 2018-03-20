@@ -111,4 +111,5 @@ class GoogLeNet(object):
             return False
 
     def get_prediction(self):
-        return self.softmax
+        size = self.softmax.shape
+        return tf.reshape(self.softmax, [size[0], size[1]*size[2]*size[3]])
