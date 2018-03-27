@@ -39,13 +39,13 @@ MODEL_NAME = 'model.ckpt'
 
 '''AlexNet'''
 AlexNet_fine_tune_para = train_para(
-    image_size = 227, lr = 0.001, lr_decay = 0.1,
+    image_size = 227, lr = 0.01, lr_decay = 0.9,
     train_steps = 100000, train_type = 'fine tune',
     skip = ['fc8'],train_list = ['fc8']
 )
 
 AlexNet_part_tune_para = train_para(
-    image_size = 227, lr = 0.001, lr_decay = 0.1,
+    image_size = 227, lr = 0.01, lr_decay = 0.9,
     train_steps = 80000, train_type = 'part tune',
     skip = ['fc8'],train_list = ['fc8', 'fc6', 'fc5']
 )
@@ -189,9 +189,8 @@ def train(net, net_para, label, keep_prob, save_dir):
             x_input, y_input = sess.run([xs,ys])
             x_input -= x_mean
             y_input -= 1
-            _, rate, loss_value, step, summary, correct_p= sess.run([train_op, correct_rate, loss, global_step, merged, correct_prediction], feed_dict={x: x_input, y_: y_input})
+            _, rate, loss_value, step, summary = sess.run([train_op, correct_rate, loss, global_step, merged], feed_dict={x: x_input, y_: y_input})
             print('loss is {0}'.format(loss_value))
-            print('predict is {0}'.format(correct_p))
             if i % 1000 == 0:
                 print("After {0:d} training step(s), loss on trian batch {1:g}".format(step, loss_value))
                 print("After {0:d} training step(s), correct rate on trian batch {1:s}".format(step, str(rate.astype(np.float))))
