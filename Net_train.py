@@ -79,18 +79,20 @@ GoogLeNet_full_train_para = train_para(
 MobileNet_fine_tune_para = train_para(
     image_size = 224, lr = 0.0001, lr_decay = 0.96,
     train_steps = 50000, train_type = 'fine tune',
-    skip = ['Logits']
+    skip = ['Logits'],train_list = ['Logits']
 )
 
 MobileNet_part_tune_para = train_para(
     image_size = 224, lr = 0.0001, lr_decay = 0.96,
     train_steps = 50000, train_type = 'part tune',
-    skip = ['Logits', 'Conv2d_13_pointwise', 'Conv2d_13_depthwise']
+    skip = ['Logits'],
+    train_list = ['Logits', 'Conv2d_13_pointwise', 'Conv2d_13_depthwise']
 )
 
 MobileNet_full_train_para = train_para(
     image_size = 224, lr = 0.0001, lr_decay = 0.96,
     train_steps = 50000, train_type = 'full train',
+    skip = ['Logits']
 )
 
 net_paras = {
@@ -129,10 +131,9 @@ def train(net, net_para, label, keep_prob):
         name = 'input-y'
     )
 
-    model = net(x, label, keep_prob, net_para.skip)
+    model = net(x, label, keep_prob, net_para.skip, train_list=net_para.train_list)
     y = model.get_prediction()
-    print('y shape is')
-    print(y.shape)
+
     global_step = tf.Variable(0, trainable = False)
 
     variable_averages = tf.train.ExponentialMovingAverage(MOVING_AVERAGE_DECAY, global_step)
@@ -158,8 +159,14 @@ def train(net, net_para, label, keep_prob):
     #     net_para.lr_decay
     # )
 
+    if isinstance(model, MobileNets) and (TRAIN_MODEL == 'finetune' or TRAIN_MODEL == 'parttune'):
+        train_step = tf.train.RMSPropOptimizer(net_para.lr, net_para.lr_decay).minimize(loss, global_step=global_step, 
+                                            var_list = tf.get_collection('train'))
+    else:
+        train_step = tf.train.RMSPropOptimizer(net_para.lr, net_para.lr_decay).minimize(loss, global_step=global_step)
     # train_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss, global_step=global_step)
-    train_step = tf.train.RMSPropOptimizer(net_para.lr, net_para.lr_decay).minimize(loss, global_step=global_step)
+    
+    
 
     with tf.control_dependencies([train_step, variable_averages_op]):
         train_op = tf.no_op(name='train')
@@ -172,7 +179,7 @@ def train(net, net_para, label, keep_prob):
         summary_writer = tf.summary.FileWriter(LOG_DIR, sess.graph)
         sess.run(tf.global_variables_initializer())
         model.loadModel(sess)
-        
+
         for i in range(net_para.train_steps):
             xs, ys = next_element
             ys = tf.reshape(ys,[BATCH_SIZE])

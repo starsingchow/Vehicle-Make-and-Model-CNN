@@ -32,6 +32,11 @@ def data_augmenttation(dir, car_data, save):
     if not os.path.exists(train_dir):
         print('--create train file--')
         os.makedirs(train_dir)
+    
+    valid_dir = os.path.join(save, 'valid')
+    if not os.path.exists(valid_dir):
+        print('--create valid file--')
+        os.makedirs(valid_dir)
 
     for key, image in images.items():
         rgb_image = cv2.cvtColor(image[0], cv2.COLOR_BGR2RGB)
@@ -41,12 +46,12 @@ def data_augmenttation(dir, car_data, save):
         squash_image = Squash(bbox_image)
 
         name_label = car_data.loc[car_data['relative_im_path'] == key, ['class', 'test']]
-        save_dir= train_dir
         if int(name_label['test']) == 1:
+            cropped = RandomCrop(squash_image, 1)
             save_dir = test_dir
             file_name = 'num_1_label_{0}_'.format(int(name_label['class'])) + key
             save_name = os.path.join(save_dir, file_name)
-            cv2.imwrite(save_name, squash_image)
+            cv2.imwrite(save_name, cropped[0])
             # print(save_name)
             # print('finsh test {0}'.format(key))
             continue
@@ -90,18 +95,21 @@ def data_augmenttation(dir, car_data, save):
         # print('finsh crop')
         try:
             save_number = random.sample(range(2,len(cropped_images)), 5)
+            valid = save_number[4]
+            save_number = save_number[0:4]
             EdgeEnhance_number = random.sample(range(2,len(cropped_images)),2)
             colorJittering_number = random.sample(range(1,len(cropped_images),2), 2)
             brightness_number = random.sample(range(2,len(cropped_images),2), 2) 
         except ValueError:
             save_number = []
+            valid = []
             EdgeEnhance_number = random.sample(range(len(cropped_images)), 1)
             colorJittering_number = random.sample(range(len(cropped_images)), 1)
             brightness_number = random.sample(range(len(cropped_images)), 1) 
             
         i = 0
         for cropped_image in cropped_images:
-            if i not in save_number and i != 0:
+            if i not in save_number and i != 0 and i != valid:
                 i +=1
                 continue
             if i in brightness_number:
@@ -112,6 +120,10 @@ def data_augmenttation(dir, car_data, save):
 
             if i in EdgeEnhance_number and i not in colorJittering_number:
                     cropped_image = EdgeEnhance(cropped_image)
+
+            save_dir= train_dir
+            if i == valid:
+                save_dir = valid_dir
 
             cropped_image = cv2.cvtColor(cropped_image, cv2.COLOR_RGB2BGR)
             save_name = save_dir + '/num_{0}_label_{1}_'.format(i,int(name_label['class'])) + key
@@ -286,9 +298,9 @@ def Brightness(image):
 
 if __name__ == '__main__':
     '''use in ec2'''
-    car_data = pd.read_csv('./Vehicle-Make-and-Model-CNN/car_information.csv')
+    # car_data = pd.read_csv('./Vehicle-Make-and-Model-CNN/car_information.csv')
     start = datetime.datetime.now()
-    # car_data = pd.read_csv('./CNN/car_information.csv')
+    car_data = pd.read_csv('./CNN/car_information.csv')
     data_augmenttation(DIR, car_data, SAVE)
     end = datetime.datetime.now()
     print(end-start)

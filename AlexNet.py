@@ -7,15 +7,17 @@ import numpy as np
 class AlexNet(object):
     """Implementation of the AlexNet."""
     def __init__(self, input_data, num_label, keep_prob, skip, 
-                weights_path='DEFAULT', train_list = None):
+                weights_path='DEFAULT', train_list = None, regularizer = None):
         '''inital data'''
         self._input_data = input_data
         self._num_label = num_label
         self._keep_prob = keep_prob
         self._skip = skip
         self._train_list = train_list
+        self._regularizer = regularizer
         if weights_path == 'DEFAULT':
-            self.weights_path = './Vehicle-Make-and-Model-CNN/data/bvlc_alexnet.npy'
+            # self.weights_path = './Vehicle-Make-and-Model-CNN/data/bvlc_alexnet.npy'
+            self.weights_path = './CNN/data/bvlc_alexnet.npy'
         else:
             self.weights_path = weights_path
         self.create()
@@ -48,7 +50,6 @@ class AlexNet(object):
         pool5 = self._max_pool(conv5, 3, 3, 2, 2, padding = 'VALID', name = 'pool5')
 
         #FC_layer_6: Flatten -> FC(w relu) -> dropout
-        print(pool5.shape)
         # size = int(pool5.shape[1] * pool5.shape[2] * pool5.shape[3])
         flattened = tf.reshape(pool5, [-1, 256 * 6 * 6])
         train_able = self._istrain_able('fc6')
@@ -112,9 +113,18 @@ class AlexNet(object):
 
     def _fc(self, x, num_in, num_out, name, relu = True, trainable = True):
         with tf.variable_scope(name) as scope:
-            weights = tf.get_variable("weights", shape=[num_in, num_out], trainable=trainable)
-            biases = tf.get_variable("biases", shape = [num_out], trainable=trainable)
-            
+            weights = tf.get_variable("weights", shape=[num_in, num_out], 
+                                        trainable=trainable, 
+                                        initializer=tf.truncated_normal_initializer(mean=0.0, stddev=2.0)
+                                        )
+            biases = tf.get_variable("biases", shape = [num_out], 
+                                        trainable=trainable
+                                        
+                                        )
+
+        if self._regularizer != None:
+            tf.add_to_collection('losses', self._regularizer(weights))
+
         if relu:
             return tf.nn.relu(tf.matmul(x, weights) + biases)
         else:

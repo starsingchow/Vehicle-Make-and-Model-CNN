@@ -17,7 +17,8 @@ class GoogLeNet(object):
         self._skip = skip
         self._train_list = train_list
         if model_path == 'DEFAULT':
-            self.model_path = './Vehicle-Make-and-Model-CNN/data/googlenet.npy'
+            # self.model_path = './Vehicle-Make-and-Model-CNN/data/googlenet.npy'
+            self.model_path = './CNN/data/googlenet.npy'
         else:
             self.weigths_path = model_path
 
@@ -82,7 +83,10 @@ class GoogLeNet(object):
         pool5 = slim.avg_pool2d(inception5b, [7, 7], stride = 1, padding = 'VALID', scope = 'arg_pool3_7x7_v1')
         dropout_layer = tf.nn.dropout(pool5, self._keep_prob, name = 'dropout')
         train_able = self._istrain_able('loss3_classifier')
-        fc1 = slim.fully_connected(dropout_layer, self._num_label, scope = 'loss3_classifier')
+        fc1 = slim.fully_connected(dropout_layer, self._num_label, 
+                                    weights_initializer=tf.truncated_normal_initializer(mean=0, stddev=2.0),
+                                    biases_initializer=tf.truncated_normal_initializer(mean=0, stddev=2.0),
+                                    scope = 'loss3_classifier')
         self.softmax = tf.nn.softmax(fc1, name = 'class_prob')
 
         
@@ -90,7 +94,7 @@ class GoogLeNet(object):
     def loadModel(self, sess):
         wDict = np.load(self.model_path, encoding = 'bytes').item()
         for name in wDict:
-           if name not in self._skip:
+            if name not in self._skip:
                 for p in wDict[name]:
                     if len(wDict[name][p].shape) == 1:
                         # sess.run(tf.get_variable('biases:0'), trainable = False). assign((p))
