@@ -153,19 +153,21 @@ def train(net, net_para, label, keep_prob, save_dir):
         correct_rate = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
         tf.summary.scalar('accuracy', correct_rate)
 
-    # learning_rate = tf.train.exponential_decay(
-    #     net_para.lr,
-    #     global_step,
-    #     net_para.train_steps / BATCH_SIZE,
-    #     net_para.lr_decay
-    # )
+    learning_rate = tf.train.exponential_decay(
+        net_para.lr,
+        global_step,
+        net_para.train_steps / BATCH_SIZE,
+        net_para.lr_decay
+    )
 
     if isinstance(model, MobileNets) and (TRAIN_MODEL == 'finetune' or TRAIN_MODEL == 'parttune'):
-        train_step = tf.train.RMSPropOptimizer(net_para.lr, net_para.lr_decay).minimize(loss, global_step=global_step, 
-                                            var_list = tf.get_collection('train'))
+        # train_step = tf.train.RMSPropOptimizer(net_para.lr, net_para.lr_decay).minimize(loss, global_step=global_step, 
+        #                                     var_list = tf.get_collection('train'))
+        train_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss, global_step=global_step,
+                                                var_list = tf.get_collection('train'))
     else:
-        train_step = tf.train.RMSPropOptimizer(net_para.lr, net_para.lr_decay).minimize(loss, global_step=global_step)
-    # train_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss, global_step=global_step)
+        # train_step = tf.train.RMSPropOptimizer(net_para.lr, net_para.lr_decay).minimize(loss, global_step=global_step)
+        train_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss, global_step=global_step)
     
     
 
