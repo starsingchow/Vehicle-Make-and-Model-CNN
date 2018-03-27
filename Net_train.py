@@ -193,10 +193,6 @@ def train(net, net_para, label, keep_prob):
             summary_writer.add_summary(summary,i)
 
         summary_writer.close()
-        save_model_dir = os.path.join(MODEL_PATH, NET_TYPE, TRAIN_MODEL)
-        if not os.path.exists(save_model_dir):
-            print('--create save file--')
-            os.makedirs(save_model_dir)
         saver.save(sess, os.path.join(save_model_dir, MODEL_NAME), global_step=global_step)
 
 def main(argv=None):
@@ -214,6 +210,16 @@ def main(argv=None):
     except KeyError as error:
         print('please enter right train type')
         return
+
+    save_model_dir = os.path.join(MODEL_PATH, NET_TYPE, TRAIN_MODEL)
+    if not os.path.exists(save_model_dir):
+        print('--create save file--')
+        os.makedirs(save_model_dir)
+    
+    log_dir = os.path.join(LOG_DIR, NET_TYPE, TRAIN_MODEL)
+    if not os.path.exists(log_dir):
+        print('--create log file--')
+        os.makedirs(log_dir)
 
     train(net, net_para, LABEL, 0.5)
 
