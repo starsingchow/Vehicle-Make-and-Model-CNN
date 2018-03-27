@@ -118,7 +118,7 @@ class AlexNet(object):
                                         initializer=tf.truncated_normal_initializer(mean=0.0, stddev=2.0)
                                         )
             biases = tf.get_variable("biases", shape = [num_out], 
-                                        trainable=trainable
+                                        trainable=trainable,
                                         initializer=tf.truncated_normal_initializer(mean=0.0, stddev=2.0)
                                         )
 
