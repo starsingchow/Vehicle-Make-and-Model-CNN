@@ -150,7 +150,6 @@ def train(net, net_para, label, keep_prob, save_dir):
 
     with tf.name_scope('accuracy'):
         correct_prediction = tf.equal(tf.argmax(y,axis=1),y_)
-        print(correct_prediction)
         correct_rate = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
         tf.summary.scalar('accuracy', correct_rate)
 
@@ -188,7 +187,9 @@ def train(net, net_para, label, keep_prob, save_dir):
             x_input, y_input = sess.run([xs,ys])
             x_input -= x_mean
             y_input -= 1
-            _, rate, loss_value, step, summary= sess.run([train_op, correct_rate, loss, global_step, merged], feed_dict={x: x_input, y_: y_input})
+            _, rate, loss_value, step, summary, correct_p= sess.run([train_op, correct_rate, loss, global_step, merged, correct_prediction], feed_dict={x: x_input, y_: y_input})
+            print('loss is {0}'.format(loss_value))
+            print('predict is {0}'.format(correct_p))
             if i % 1000 == 0:
                 print("After {0:d} training step(s), loss on trian batch {1:g}".format(step, loss_value))
                 print("After {0:d} training step(s), correct rate on trian batch {1:s}".format(step, str(rate.astype(np.float))))
