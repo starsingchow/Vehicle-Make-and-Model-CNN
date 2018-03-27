@@ -16,8 +16,8 @@ class AlexNet(object):
         self._train_list = train_list
         self._regularizer = regularizer
         if weights_path == 'DEFAULT':
-            # self.weights_path = './Vehicle-Make-and-Model-CNN/data/bvlc_alexnet.npy'
-            self.weights_path = './CNN/data/bvlc_alexnet.npy'
+            self.weights_path = './Vehicle-Make-and-Model-CNN/data/bvlc_alexnet.npy'
+            # self.weights_path = './CNN/data/bvlc_alexnet.npy'
         else:
             self.weights_path = weights_path
         self.create()
@@ -119,7 +119,7 @@ class AlexNet(object):
                                         )
             biases = tf.get_variable("biases", shape = [num_out], 
                                         trainable=trainable
-                                        
+                                        initializer=tf.truncated_normal_initializer(mean=0.0, stddev=2.0)
                                         )
 
         if self._regularizer != None:

@@ -47,8 +47,8 @@ class MobileNets(object):
         self._train_list = train_list
 
         if model_path == 'DEFAULT':
-            # self._model_path = './Vehicle-Make-and-Model-CNN/data/mobilenets_v1_1.0_224.npy'
-            self._model_path = './CNN/data/mobilenets_v1_1.0_224.npy'
+            self._model_path = './Vehicle-Make-and-Model-CNN/data/mobilenets_v1_1.0_224.npy'
+            # self._model_path = './CNN/data/mobilenets_v1_1.0_224.npy'
         else:
             self._model_path = model_path
 
