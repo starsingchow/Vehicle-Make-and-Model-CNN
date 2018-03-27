@@ -76,7 +76,7 @@ def get_data(dir,batch_size):
 
     dataset = tf.data.Dataset.from_tensor_slices((filenames, labels_list))
     dataset = dataset.map(_parse_function)
-    dataset = dataset.shuffle(buffer_size=100).repeat(205).batch(100)
+    dataset = dataset.shuffle(buffer_size=10000).repeat(205).batch(100)
 
     iterator = dataset.make_one_shot_iterator()
     # images, labels = iterator.get_next()
