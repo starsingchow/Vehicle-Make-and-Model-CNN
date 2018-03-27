@@ -230,7 +230,7 @@ def RandomCrop(image, numbers):
         numbers = 1
 
     for i in range(numbers):
-        croped_image = tf.random_crop(image, [224, 224, 3],seed = 345)  
+        croped_image = tf.random_crop(image, [227, 227, 3],seed = 345)  
         with tf.Session() as sess:
             crop_eval = sess.run(croped_image)
         croped_images.append(crop_eval)
