@@ -193,7 +193,11 @@ def train(net, net_para, label, keep_prob):
             summary_writer.add_summary(summary,i)
 
         summary_writer.close()
-        saver.save(sess, os.path.join(MODEL_PATH, MODEL_NAME), global_step=global_step)
+        save_model_dir = os.path.join(MODEL_PATH, NET_TYPE, TRAIN_MODEL)
+        if not os.path.exists(save_model_dir):
+            print('--create save file--')
+            os.makedirs(save_model_dir)
+        saver.save(sess, os.path.join(save_model_dir, MODEL_NAME), global_step=global_step)
 
 def main(argv=None):
     if NET_TYPE == 'alexnet':
