@@ -117,7 +117,7 @@ NUMBER_CHANNEL = 3
 MOVING_AVERAGE_DECAY = 0.99
 
 def train(net, net_para, label, keep_prob, save_dir):
-    data_iterator = get_data(DATA_PATH, 100)
+    data_iterator = get_data(DATA_PATH, BATCH_SIZE)
     next_element = data_iterator.get_next()
     # x_mean = np.load('./Vehicle-Make-and-Model-CNN/data/'+MEAN_VALUE)
     x = tf.placeholder(
