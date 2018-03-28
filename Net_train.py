@@ -145,7 +145,7 @@ def train(net, net_para, label, keep_prob, save_dir):
 
     # cross_entropy_mean = tf.reduce_mean(cross_entropy)
     logits =  y+1e10
-    cross_entropy_mean = tf.reduce_sum(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=y_))
+    cross_entropy_mean = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=y_))
     with tf.name_scope('loss'):
         loss = cross_entropy_mean
         tf.summary.scalar('loss', loss)
