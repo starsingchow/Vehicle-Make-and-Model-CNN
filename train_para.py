@@ -26,7 +26,7 @@ class train_para():
         self.train_list = train_list
         if self.skip == None:
                 self.skip = []
-        
+        self.train_type = train_type
         # if train_type == 'full train':
         #         self.train_type = 0
         # elif train_type == 'part fune':
