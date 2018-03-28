@@ -191,8 +191,11 @@ def train(net, net_para, label, keep_prob, save_dir):
             y_input -= 1
             print(y_input)
             _, y_pred,rate, loss_value, step, summary = sess.run([train_op, y, correct_rate, loss, global_step, merged], feed_dict={x: x_input, y_: y_input})
-            print(y_pred)
+            
+            print(y_input)
+            print(tf.arg_max(y_pred))
             print('loss is {0}'.format(loss_value))
+            
             if i % 1000 == 0:
                 print("After {0:d} training step(s), loss on trian batch {1:g}".format(step, loss_value))
                 print("After {0:d} training step(s), correct rate on trian batch {1:s}".format(step, str(rate.astype(np.float))))
