@@ -112,7 +112,7 @@ net_paras = {
         'fulltrain': MobileNet_full_train_para,
     }
 }
-BATCH_SIZE = 100
+BATCH_SIZE = 1024
 NUMBER_CHANNEL = 3
 MOVING_AVERAGE_DECAY = 0.99
 
