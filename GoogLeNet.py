@@ -83,11 +83,11 @@ class GoogLeNet(object):
         pool5 = slim.avg_pool2d(inception5b, [7, 7], stride = 1, padding = 'VALID', scope = 'arg_pool3_7x7_v1')
         dropout_layer = tf.nn.dropout(pool5, self._keep_prob, name = 'dropout')
         train_able = self._istrain_able('loss3_classifier')
-        fc1 = slim.fully_connected(dropout_layer, self._num_label, 
+        self.fc1 = slim.fully_connected(dropout_layer, self._num_label, 
                                     weights_initializer=tf.truncated_normal_initializer(mean=0, stddev=2.0),
                                     biases_initializer=tf.truncated_normal_initializer(mean=0, stddev=2.0),
                                     scope = 'loss3_classifier')
-        self.softmax = tf.nn.softmax(fc1, name = 'class_prob')
+        # self.softmax = tf.nn.softmax(fc1, name = 'class_prob')
 
         
     
@@ -117,5 +117,7 @@ class GoogLeNet(object):
             return False
 
     def get_prediction(self):
-        size = self.softmax.shape
-        return tf.reshape(self.softmax, [size[0], size[1]*size[2]*size[3]])
+        # size = self.softmax.shape
+        # return tf.reshape(self.softmax, [size[0], size[1]*size[2]*size[3]])
+        size = self.fc1.shape
+        return tf.reshape(self.fc1, [size[0], size[1]*size[2]*size[3]])

@@ -103,8 +103,8 @@ class AlexNet(object):
         return relu
 
     def get_prediction(self):
-        softmax = tf.nn.softmax(self.fc8)
-        return softmax
+        # softmax = tf.nn.softmax(self.fc8)
+        return self.fc8
 
     def _max_pool(self, x, filter_weight, filter_height, stride_y, stride_x, name, padding = 'SAME'):
         return tf.nn.max_pool(x, ksize = [1, filter_height, filter_weight, 1], strides = [1, stride_y, stride_x, 1], 

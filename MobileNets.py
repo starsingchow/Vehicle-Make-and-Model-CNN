@@ -76,7 +76,8 @@ class MobileNets(object):
                 prediction = tf.nn.softmax(logits, name = 'class_prob')
                 end_points['Predictions'] = prediction
 
-        return prediction
+        # return prediction
+        return logits
                 
         
     def mobilenets_base(self, inputs, conv_defs, use_explicit_padding = False, scope = None, final_endpoint = 'Conv2d_13_pointwise'):

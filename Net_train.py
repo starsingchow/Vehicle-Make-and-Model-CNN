@@ -140,10 +140,12 @@ def train(net, net_para, label, keep_prob, save_dir):
     variable_averages = tf.train.ExponentialMovingAverage(MOVING_AVERAGE_DECAY, global_step)
     variable_averages_op = variable_averages.apply(tf.trainable_variables())
     
-    one_hot_y = tf.one_hot(y_, LABEL)
-    cross_entropy = one_hot_y*tf.log(y+1e10)
+    # one_hot_y = tf.one_hot(y_, LABEL)
+    # cross_entropy = one_hot_y*tf.log(y+1e10)
 
-    cross_entropy_mean = tf.reduce_mean(cross_entropy)
+    # cross_entropy_mean = tf.reduce_mean(cross_entropy)
+    logtis =  y+1e10
+    cross_entropy_mean = tf.reduce_sum(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=y_))
     with tf.name_scope('loss'):
         loss = cross_entropy_mean
         tf.summary.scalar('loss', loss)
