@@ -194,6 +194,7 @@ def train(net, net_para, label, keep_prob, save_dir):
             
             print(y_input)
             print(tf.arg_max(y_pred,dimension=1))
+            print(tf.equal(y_input, tf.arg_max(y_pred,dimension=1)))
             print('loss is {0}'.format(loss_value))
 
             if i % 1000 == 0:
