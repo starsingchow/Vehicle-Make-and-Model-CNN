@@ -31,9 +31,9 @@ DATA_PATH = args.car_data
 MODEL_PATH = args.model_dir
 LOG_DIR = args.log_dir
 
-MEAN_VALUE = 'mean224.npy'
-if NET_TYPE == 'alexnet':
-    MEAN_VALUE = 'mean227.npy'
+# MEAN_VALUE = 'mean224.npy'
+# if NET_TYPE == 'alexnet':
+#     MEAN_VALUE = 'mean227.npy'
 
 MODEL_NAME = 'model.ckpt'
 
@@ -119,7 +119,7 @@ MOVING_AVERAGE_DECAY = 0.99
 def train(net, net_para, label, keep_prob, save_dir):
     data_iterator = get_data(DATA_PATH, 100)
     next_element = data_iterator.get_next()
-    x_mean = np.load('./Vehicle-Make-and-Model-CNN/data/'+MEAN_VALUE)
+    # x_mean = np.load('./Vehicle-Make-and-Model-CNN/data/'+MEAN_VALUE)
     x = tf.placeholder(
         tf.float32,
         [BATCH_SIZE, net_para.image_size, 
@@ -187,9 +187,11 @@ def train(net, net_para, label, keep_prob, save_dir):
             xs, ys = next_element
             ys = tf.reshape(ys,[BATCH_SIZE])
             x_input, y_input = sess.run([xs,ys])
-            x_input -= x_mean
+            # x_input -= x_mean
             y_input -= 1
-            _, rate, loss_value, step, summary = sess.run([train_op, correct_rate, loss, global_step, merged], feed_dict={x: x_input, y_: y_input})
+            print(y_input)
+            _, y_pred,rate, loss_value, step, summary = sess.run([train_op, y, correct_rate, loss, global_step, merged], feed_dict={x: x_input, y_: y_input})
+            print(y_pred)
             print('loss is {0}'.format(loss_value))
             if i % 1000 == 0:
                 print("After {0:d} training step(s), loss on trian batch {1:g}".format(step, loss_value))
@@ -201,16 +203,24 @@ def train(net, net_para, label, keep_prob, save_dir):
 
 def main(argv=None):
     if NET_TYPE == 'alexnet':
+        print('--select AlexNet--')
         net = AlexNet
     elif NET_TYPE == 'googlenet':
+        print('--select GoogLeNet--')
         net = GoogLeNet
     elif NET_TYPE == 'mobilenet':
+        print('--select MobileNet--')
         net = MobileNets
     else:
         raise ValueError('net type enter error, please input writer error')
     
     try:
         net_para = net_paras[NET_TYPE][TRAIN_MODEL]
+        print('-- Net para--')
+        print('learning rate: {0}'.format(net_para.lr))
+        print('learning rate decay: {0}'.format(net_para.lr_decay))
+        print('train steps: {0}'.format(net_para.train_steps))
+        print('train type: {0}'.format(net_para.train_type))
     except KeyError as error:
         print('please enter right train type')
         return

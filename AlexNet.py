@@ -66,6 +66,8 @@ class AlexNet(object):
         self.fc8 = self._fc(dropout7, 4096, self._num_label, name = 'fc8', relu=False, trainable = train_able)
 
     def loadModel(self, sess):
+        print('--load ImageNet Model--')
+        print('load dir: {0}'.format(self.weights_path))
         wDict = np.load(self.weights_path, encoding = 'bytes').item()
         for name in wDict:
             if name not in self._skip:

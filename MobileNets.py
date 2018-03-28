@@ -132,6 +132,8 @@ class MobileNets(object):
                             return net, end_points
     
     def loadModel(self, sess):
+        print('--load ImageNet Model--')
+        print('load dir: {0}'.format(self._model_path))
         wDict = np.load(self._model_path, encoding = 'bytes').item()
         for name in wDict:
             if name not in self._skip:
