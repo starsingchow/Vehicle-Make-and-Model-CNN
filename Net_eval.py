@@ -57,7 +57,7 @@ def evaluate(net,log_dir):
         softmax = tf.nn.softmax(y)
 
         correct_prediction = tf.equal(y_, tf.arg_max(softmax, dimension = 1))
-        accuracy = tf.reduce_mean(correct_prediction)
+        accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
         tf.summary.scalar('accuracy', accuracy)
 
         variable_averages = tf.train.ExponentialMovingAverage(MOVING_AVERAGE_DECAY)
