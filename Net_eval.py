@@ -14,10 +14,10 @@ import time
 parser = argparse.ArgumentParser()
 parser.add_argument('net_model', choices = ['alexnet', 'googlenet','mobilenet'], default='folder', help='choose net')
 parser.add_argument('train_model', choices = ['finetune', 'fulltrain','parttune'], default='folder', help='choose net')
-parser.add_argument('interval_secs', type=str, default='', help ='eval waiting times')
-parser.add_argument('data_dir', type=str, default='', help ='Valid Data Dir')
-parser.add_argument('model_dir', type=str, default='', help ='Model Dir')
-parser.add_argument('log_dir', type=str, default='', help ='Log Dir')
+parser.add_argument('--interval_secs', type=str, default='', help ='eval waiting times')
+parser.add_argument('--data_dir', type=str, default='', help ='Valid Data Dir')
+parser.add_argument('--model_dir', type=str, default='', help ='Model Dir')
+parser.add_argument('--log_dir', type=str, default='', help ='Log Dir')
 
 FLAGS, _ = parser.parse_known_args()
 
