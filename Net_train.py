@@ -152,7 +152,7 @@ def train(net, net_para, label, keep_prob, save_dir):
 
     with tf.name_scope('accuracy'):
         correct_prediction = tf.equal(tf.argmax(y,axis=1),y_)
-        correct_rate = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+        correct_rate = tf.reduce_sum(tf.cast(correct_prediction, tf.float32))
         tf.summary.scalar('accuracy', correct_rate)
 
     learning_rate = tf.train.exponential_decay(
