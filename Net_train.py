@@ -192,9 +192,15 @@ def train(net, net_para, label, keep_prob, save_dir):
             print(y_input)
             _, y_pred,rate, loss_value, step, summary = sess.run([train_op, y, correct_rate, loss, global_step, merged], feed_dict={x: x_input, y_: y_input})
             
+            print('-- origin --')
             print(y_input)
-            print(tf.arg_max(y_pred,dimension=1))
-            print(tf.equal(y_input, tf.arg_max(y_pred,dimension=1)))
+            print('-- predict --')
+            print(np.argmax(y_pred,axis=1))
+            print('-- compare--')
+            print(np.equal(y_input, np.argmax(y_pred,axis=1)))
+            print('-- rate --')
+            pre_rate = np.sum(np.equal(y_input, np.argmax(y_pred,axis=1))) / BATCH_SIZE
+            print('-- loss --')
             print('loss is {0}'.format(loss_value))
 
             if i % 1000 == 0:
