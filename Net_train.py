@@ -64,7 +64,7 @@ GoogLeNet_fine_tune_para = train_para(
 )
 
 GoogLeNet_part_tune_para = train_para(
-    image_size = 224, lr = 0.1, lr_decay = 0.5,
+    image_size = 224, lr = 0.0001, lr_decay = 0.96,
     train_steps = 50000, train_type = 'part tune',
     skip = ['loss3_classifier'], train_list = ['loss3_classifier', 'inception_5b', 'inception_5a']
 )
@@ -205,7 +205,7 @@ def train(net, net_para, label, keep_prob, save_dir):
             # print('-- loss --')
             # print('loss is {0}'.format(loss_value))
 
-            if i % 10 == 0:
+            if i % 1000 == 0:
                 print("After {0:d} training step(s), loss on trian batch {1:g}".format(step, loss_value))
                 print("After {0:d} training step(s), correct rate on trian batch {1:s}".format(step, str(rate.astype(np.float))))
             summary_writer.add_summary(summary,i)
