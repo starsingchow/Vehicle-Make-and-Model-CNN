@@ -58,19 +58,19 @@ AlexNet_full_train_para = train_para(
 
 '''GoogLeNet V1'''
 GoogLeNet_fine_tune_para = train_para(
-    image_size = 224, lr = 0.0001, lr_decay = 0.96,
+    image_size = 224, lr = 0.00001, lr_decay = 0.96,
     train_steps = 50000, train_type = 'fine tune',
     skip = ['loss3_classifier'], train_list = ['loss3_classifier']
 )
 
 GoogLeNet_part_tune_para = train_para(
-    image_size = 224, lr = 0.5, lr_decay = 0.96,
+    image_size = 224, lr = 0.00001, lr_decay = 0.96,
     train_steps = 50000, train_type = 'part tune',
     skip = ['loss3_classifier'], train_list = ['loss3_classifier', 'inception_5b', 'inception_5a']
 )
 
 GoogLeNet_full_train_para = train_para(
-    image_size = 224, lr = 0.5, lr_decay = 0.96,
+    image_size = 224, lr = 0.00001, lr_decay = 0.96,
     train_steps = 50000, train_type = 'full train',
     skip = ['loss3_classifier'],
 )
@@ -112,7 +112,7 @@ net_paras = {
         'fulltrain': MobileNet_full_train_para,
     }
 }
-BATCH_SIZE = 1024
+BATCH_SIZE = 512
 NUMBER_CHANNEL = 3
 MOVING_AVERAGE_DECAY = 0.99
 
