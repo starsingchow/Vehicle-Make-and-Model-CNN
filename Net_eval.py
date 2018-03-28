@@ -1,4 +1,5 @@
 import tensorflow as tf
+from tensorflow.python import pywrap_tensorflow
 import numpy as np
 
 from AlexNet import AlexNet
@@ -69,6 +70,12 @@ def evaluate(net,log_dir):
             with tf.Session() as sess:
                 summary_writer = tf.summary.FileWriter(log_dir, sess.graph)
                 ckpt = tf.train.get_checkpoint_state(model_dir)
+                reader=pywrap_tensorflow.NewCheckpointReader(log_dir)
+                var_to_shape_map=reader.get_variable_to_shape_map()
+                for key in var_to_shape_map:
+                    print("tensor_name: ", key)
+                    print(reader.get_tensor(key))
+                    
                 if ckpt and ckpt.model_checkpoint_path:
                     saver.restore(sess, ckpt.model_checkpoint_path)
                     global_step = ckpt.model_checkpoint_path.split('/')[-1].split('_')[-1]
