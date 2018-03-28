@@ -64,7 +64,7 @@ GoogLeNet_fine_tune_para = train_para(
 )
 
 GoogLeNet_part_tune_para = train_para(
-    image_size = 224, lr = 0.0001, lr_decay = 0.96,
+    image_size = 224, lr = 0.01, lr_decay = 0.96,
     train_steps = 50000, train_type = 'part tune',
     skip = ['loss3_classifier'], train_list = ['loss3_classifier', 'inception_5b', 'inception_5a']
 )
