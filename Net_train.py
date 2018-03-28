@@ -64,13 +64,13 @@ GoogLeNet_fine_tune_para = train_para(
 )
 
 GoogLeNet_part_tune_para = train_para(
-    image_size = 224, lr = 0.0001, lr_decay = 0.96,
+    image_size = 224, lr = 0.5, lr_decay = 0.96,
     train_steps = 50000, train_type = 'part tune',
     skip = ['loss3_classifier'], train_list = ['loss3_classifier', 'inception_5b', 'inception_5a']
 )
 
 GoogLeNet_full_train_para = train_para(
-    image_size = 224, lr = 0.0001, lr_decay = 0.96,
+    image_size = 224, lr = 0.5, lr_decay = 0.96,
     train_steps = 50000, train_type = 'full train',
     skip = ['loss3_classifier'],
 )
@@ -189,7 +189,6 @@ def train(net, net_para, label, keep_prob, save_dir):
             x_input, y_input = sess.run([xs,ys])
             # x_input -= x_mean
             y_input -= 1
-            print(y_input)
             _, y_pred,rate, loss_value, step, summary = sess.run([train_op, y, correct_rate, loss, global_step, merged], feed_dict={x: x_input, y_: y_input})
             
             print('-- origin --')
@@ -200,6 +199,7 @@ def train(net, net_para, label, keep_prob, save_dir):
             print(np.equal(y_input, np.argmax(y_pred,axis=1)))
             print('-- rate --')
             pre_rate = np.sum(np.equal(y_input, np.argmax(y_pred,axis=1))) / BATCH_SIZE
+            print(pre_rate)
             print('-- loss --')
             print('loss is {0}'.format(loss_value))
 
