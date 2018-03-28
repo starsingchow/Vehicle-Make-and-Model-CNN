@@ -74,7 +74,6 @@ def evaluate(net,log_dir):
                 var_to_shape_map=reader.get_variable_to_shape_map()
                 for key in var_to_shape_map:
                     print("tensor_name: ", key)
-                    print(reader.get_tensor(key))
 
                 if ckpt and ckpt.model_checkpoint_path:
                     saver.restore(sess, ckpt.model_checkpoint_path)
