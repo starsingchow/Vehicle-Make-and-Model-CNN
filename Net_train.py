@@ -163,13 +163,13 @@ def train(net, net_para, label, keep_prob, save_dir):
     )
 
     if isinstance(model, MobileNets) and (TRAIN_MODEL == 'finetune' or TRAIN_MODEL == 'parttune'):
-        # train_step = tf.train.RMSPropOptimizer(net_para.lr, net_para.lr_decay).minimize(loss, global_step=global_step, 
-        #                                     var_list = tf.get_collection('train'))
-        train_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss, global_step=global_step,
-                                                var_list = tf.get_collection('train'))
+        train_step = tf.train.RMSPropOptimizer(net_para.lr, net_para.lr_decay).minimize(loss, global_step=global_step, 
+                                            var_list = tf.get_collection('train'))
+        # train_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss, global_step=global_step,
+        #                                         var_list = tf.get_collection('train'))
     else:
-        # train_step = tf.train.RMSPropOptimizer(net_para.lr, net_para.lr_decay).minimize(loss, global_step=global_step)
-        train_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss, global_step=global_step)
+        train_step = tf.train.RMSPropOptimizer(net_para.lr, net_para.lr_decay).minimize(loss, global_step=global_step)
+        # train_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss, global_step=global_step)
     
     
 
@@ -191,21 +191,21 @@ def train(net, net_para, label, keep_prob, save_dir):
             x_input, y_input = sess.run([xs,ys])
             # x_input -= x_mean
             y_input -= 1
-            _, y_pred,rate, loss_value, step, summary = sess.run([train_op, y, correct_rate, loss, global_step, merged], feed_dict={x: x_input, y_: y_input})
+            _, rate, loss_value, step, summary = sess.run([train_op, correct_rate, loss, global_step, merged], feed_dict={x: x_input, y_: y_input})
             
-            print('-- origin --')
-            print(y_input)
-            print('-- predict --')
-            print(np.argmax(y_pred,axis=1))
-            print('-- compare--')
-            print(np.equal(y_input, np.argmax(y_pred,axis=1)))
-            print('-- rate --')
-            pre_rate = np.sum(np.equal(y_input, np.argmax(y_pred,axis=1))) / BATCH_SIZE
-            print(pre_rate)
-            print('-- loss --')
-            print('loss is {0}'.format(loss_value))
+            # print('-- origin --')
+            # print(y_input)
+            # print('-- predict --')
+            # print(np.argmax(y_pred,axis=1))
+            # print('-- compare--')
+            # print(np.equal(y_input, np.argmax(y_pred,axis=1)))
+            # print('-- rate --')
+            # pre_rate = np.sum(np.equal(y_input, np.argmax(y_pred,axis=1))) / BATCH_SIZE
+            # print(pre_rate)
+            # print('-- loss --')
+            # print('loss is {0}'.format(loss_value))
 
-            if i % 1000 == 0:
+            if i % 500 == 0:
                 print("After {0:d} training step(s), loss on trian batch {1:g}".format(step, loss_value))
                 print("After {0:d} training step(s), correct rate on trian batch {1:s}".format(step, str(rate.astype(np.float))))
             summary_writer.add_summary(summary,i)
