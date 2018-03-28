@@ -65,7 +65,7 @@ def _parse_function(filename, label):
     image = tf.cast(image_decoded, tf.float32)
     return image, label
 
-def get_data(dir,batch_size):
+def get_train_data(dir,batch_size):
     list_names = os.listdir(dir)
     filenames = [os.path.join(dir,file) for file in list_names 
                 if os.path.isfile(os.path.join(dir,file)) and file != '.DS_Store']
@@ -81,7 +81,23 @@ def get_data(dir,batch_size):
     iterator = dataset.make_one_shot_iterator()
     # images, labels = iterator.get_next()
     return iterator
-        
+
+def get_test_data(dir,batch_size):
+    list_names = os.listdir(dir)
+    filenames = [os.path.join(dir,file) for file in list_names 
+                if os.path.isfile(os.path.join(dir,file)) and file != '.DS_Store']
+    filenames = tf.constant(filenames)
+
+    labels_list = [get_label(file) for file in list_names if file != '.DS_Store']
+    labels_list = tf.constant(labels_list)
+
+    dataset = tf.data.Dataset.from_tensor_slices((filenames, labels_list))
+    dataset = dataset.map(_parse_function)
+    dataset = dataset.batch(batch_size)
+
+    iterator = dataset.make_one_shot_iterator()
+    # images, labels = iterator.get_next()
+    return iterator
 
 
 # def main(argv=None):

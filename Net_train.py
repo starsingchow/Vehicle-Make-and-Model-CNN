@@ -9,7 +9,7 @@ from GoogLeNet import GoogLeNet
 from MobileNets import MobileNets
 
 from train_para import train_para
-from input_data import get_data
+from input_data import get_train_data
 
 import argparse
 import os
@@ -112,12 +112,12 @@ net_paras = {
         'fulltrain': MobileNet_full_train_para,
     }
 }
-BATCH_SIZE = 512
+BATCH_SIZE = 256
 NUMBER_CHANNEL = 3
 MOVING_AVERAGE_DECAY = 0.99
 
-def train(net, net_para, label, keep_prob, save_dir):
-    data_iterator = get_data(DATA_PATH, BATCH_SIZE)
+def train(net, net_para, label, keep_prob, save_dir, log_dir):
+    data_iterator = get_train_data(DATA_PATH, BATCH_SIZE)
     next_element = data_iterator.get_next()
     # x_mean = np.load('./Vehicle-Make-and-Model-CNN/data/'+MEAN_VALUE)
     x = tf.placeholder(
@@ -181,7 +181,7 @@ def train(net, net_para, label, keep_prob, save_dir):
     merged = tf.summary.merge_all()
 
     with tf.Session() as sess:
-        summary_writer = tf.summary.FileWriter(LOG_DIR, sess.graph)
+        summary_writer = tf.summary.FileWriter(log_dir, sess.graph)
         sess.run(tf.global_variables_initializer())
         model.loadModel(sess)
 
@@ -208,10 +208,11 @@ def train(net, net_para, label, keep_prob, save_dir):
             if i % 1000 == 0:
                 print("After {0:d} training step(s), loss on trian batch {1:g}".format(step, loss_value))
                 print("After {0:d} training step(s), correct rate on trian batch {1:s}".format(step, str(rate.astype(np.float))))
+                saver.save(sess, os.path.join(save_dir, MODEL_NAME), global_step=global_step)
+
             summary_writer.add_summary(summary,i)
 
         summary_writer.close()
-        saver.save(sess, os.path.join(save_dir, MODEL_NAME), global_step=global_step)
 
 def main(argv=None):
     if NET_TYPE == 'alexnet':
@@ -242,12 +243,12 @@ def main(argv=None):
         print('--create save file--')
         os.makedirs(save_model_dir)
     
-    log_dir = os.path.join(LOG_DIR, NET_TYPE, TRAIN_MODEL)
+    log_dir = os.path.join(LOG_DIR, NET_TYPE, TRAIN_MODEL, 'train')
     if not os.path.exists(log_dir):
         print('--create log file--')
         os.makedirs(log_dir)
 
-    train(net, net_para, LABEL, 0.5, save_model_dir)
+    train(net, net_para, LABEL, 0.5, save_model_dir, log_dir)
 
 
 if __name__ == '__main__':
