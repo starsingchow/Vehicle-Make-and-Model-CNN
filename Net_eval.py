@@ -41,6 +41,8 @@ def evaluate(net,log_dir):
         data_iterator = get_test_data(DATA_PATH, 8144)
         next_element = data_iterator.get_next()
         x, y_ = next_element
+        x = tf.cast(x, tf.float32)
+        y_ = tf.cast(y_, tf.int64)
         y_ = tf.reshape(y_,[8144])
 
         model = net(x, 196, 1, None)
