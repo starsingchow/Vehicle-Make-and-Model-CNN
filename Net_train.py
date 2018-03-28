@@ -163,13 +163,13 @@ def train(net, net_para, label, keep_prob, save_dir):
     )
 
     if isinstance(model, MobileNets) and (TRAIN_MODEL == 'finetune' or TRAIN_MODEL == 'parttune'):
-        train_step = tf.train.RMSPropOptimizer(net_para.lr, net_para.lr_decay).minimize(loss, global_step=global_step, 
-                                            var_list = tf.get_collection('train'))
-        # train_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss, global_step=global_step,
-        #                                         var_list = tf.get_collection('train'))
+        # train_step = tf.train.RMSPropOptimizer(net_para.lr, net_para.lr_decay).minimize(loss, global_step=global_step, 
+        #                                     var_list = tf.get_collection('train'))
+        train_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss, global_step=global_step,
+                                                var_list = tf.get_collection('train'))
     else:
-        train_step = tf.train.RMSPropOptimizer(net_para.lr, net_para.lr_decay).minimize(loss, global_step=global_step)
-        # train_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss, global_step=global_step)
+        # train_step = tf.train.RMSPropOptimizer(net_para.lr, net_para.lr_decay).minimize(loss, global_step=global_step)
+        train_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss, global_step=global_step)
     
     
 
@@ -205,7 +205,7 @@ def train(net, net_para, label, keep_prob, save_dir):
             # print('-- loss --')
             # print('loss is {0}'.format(loss_value))
 
-            if i % 500 == 0:
+            if i % 10 == 0:
                 print("After {0:d} training step(s), loss on trian batch {1:g}".format(step, loss_value))
                 print("After {0:d} training step(s), correct rate on trian batch {1:s}".format(step, str(rate.astype(np.float))))
             summary_writer.add_summary(summary,i)
