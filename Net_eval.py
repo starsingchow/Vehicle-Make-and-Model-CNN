@@ -40,10 +40,17 @@ def evaluate(net,log_dir):
     with tf.Graph().as_default() as g:
         data_iterator = get_test_data(DATA_PATH, 8144)
         next_element = data_iterator.get_next()
-        x, y_ = next_element
-        x = tf.cast(x, tf.float32)
-        y_ = tf.cast(y_, tf.int64)
-        y_ = tf.reshape(y_,[8144])
+        x = tf.placeholder(
+            tf.float32,
+            [8144, IMAGE_SIZE, 
+            IMAGE_SIZE, NUMBER_CHANNEL],
+            name = 'input-x'
+            )
+        y_ = tf.placeholder(
+            tf.int64, 
+            [None],
+            name = 'input-y'
+        )
 
         model = net(x, 196, 1, None)
         y = model.get_prediction()
@@ -65,7 +72,11 @@ def evaluate(net,log_dir):
                 if ckpt and ckpt.model_checkpoint_path:
                     saver.restore(sess, ckpt.model_checkpoint_path)
                     global_step = ckpt.model_checkpoint_path.split('/')[-1].split('_')[-1]
-                    accuracy_score,summary= sess.run([accuracy,merged])
+                    xs, ys = next_element
+                    ys = tf.reshape(ys,[8144])
+                    x_input, y_input = sess.run([xs,ys])
+                    y_input -= 1
+                    accuracy_score,summary= sess.run([accuracy,merged],feed_dict={x: x_input, y_: y_input})
                     print('After {0:s} training step(s), validation accuracy {1:g}'.format(global_step, accuracy_score))
                     summary_writer.add_summary(summary,global_step)
                 else:
