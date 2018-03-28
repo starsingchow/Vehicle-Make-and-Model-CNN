@@ -58,19 +58,19 @@ AlexNet_full_train_para = train_para(
 
 '''GoogLeNet V1'''
 GoogLeNet_fine_tune_para = train_para(
-    image_size = 224, lr = 0.00001, lr_decay = 0.96,
+    image_size = 224, lr = 0.0001, lr_decay = 0.96,
     train_steps = 50000, train_type = 'fine tune',
     skip = ['loss3_classifier'], train_list = ['loss3_classifier']
 )
 
 GoogLeNet_part_tune_para = train_para(
-    image_size = 224, lr = 0.00001, lr_decay = 0.96,
+    image_size = 224, lr = 0.0001, lr_decay = 0.96,
     train_steps = 50000, train_type = 'part tune',
     skip = ['loss3_classifier'], train_list = ['loss3_classifier', 'inception_5b', 'inception_5a']
 )
 
 GoogLeNet_full_train_para = train_para(
-    image_size = 224, lr = 0.00001, lr_decay = 0.96,
+    image_size = 224, lr = 0.0001, lr_decay = 0.96,
     train_steps = 50000, train_type = 'full train',
     skip = ['loss3_classifier'],
 )
@@ -145,7 +145,7 @@ def train(net, net_para, label, keep_prob, save_dir):
 
     # cross_entropy_mean = tf.reduce_mean(cross_entropy)
     logits =  y+1e10
-    cross_entropy_mean = tf.reduce_sum(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=y_)) / BATCH_SIZE
+    cross_entropy_mean = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=y_))
     with tf.name_scope('loss'):
         loss = cross_entropy_mean
         tf.summary.scalar('loss', loss)
