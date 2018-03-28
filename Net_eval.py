@@ -70,7 +70,7 @@ def evaluate(net,log_dir):
             with tf.Session() as sess:
                 summary_writer = tf.summary.FileWriter(log_dir, sess.graph)
                 ckpt = tf.train.get_checkpoint_state(model_dir)
-                reader=pywrap_tensorflow.NewCheckpointReader(os.path.join(model_dir,'model.ckpt'))
+                reader=pywrap_tensorflow.NewCheckpointReader(os.path.join(model_dir,'model.ckpt-1001'))
                 var_to_shape_map=reader.get_variable_to_shape_map()
                 for key in var_to_shape_map:
                     print("tensor_name: ", key)
