@@ -95,7 +95,7 @@ def evaluate(net,log_dir, trian_list):
         time.sleep(EVAL_INTERVAL_SECS)
 
 def main(argv=None):
-    train_list == None
+    train_list = None
     if NET_TYPE == 'alexnet':
         print('--select AlexNet--')
         net = AlexNet
