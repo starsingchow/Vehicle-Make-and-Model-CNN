@@ -41,11 +41,11 @@ model_dir = os.path.join(MODEL_DIR, NET_TYPE, TRAIN_MODEL)
 
 def evaluate(net,log_dir, trian_list):
     with tf.Graph().as_default() as g:
-        data_iterator = get_test_data(DATA_PATH, 1018)
+        data_iterator = get_test_data(DATA_PATH, 509)
         next_element = data_iterator.get_next()
         x = tf.placeholder(
             tf.float32,
-            [1018, IMAGE_SIZE, 
+            [509, IMAGE_SIZE, 
             IMAGE_SIZE, NUMBER_CHANNEL],
             name = 'input-x'
             )
