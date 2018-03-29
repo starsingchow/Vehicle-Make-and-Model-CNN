@@ -1,5 +1,5 @@
 import tensorflow as tf
-from tensorflow.python import pywrap_tensorflow
+# from tensorflow.python import pywrap_tensorflow
 import numpy as np
 
 from AlexNet import AlexNet
@@ -70,10 +70,10 @@ def evaluate(net,log_dir, trian_list):
             with tf.Session() as sess:
                 summary_writer = tf.summary.FileWriter(log_dir, sess.graph)
                 ckpt = tf.train.get_checkpoint_state(model_dir)
-                reader=pywrap_tensorflow.NewCheckpointReader(os.path.join(model_dir,'model.ckpt-1001'))
-                var_to_shape_map=reader.get_variable_to_shape_map()
-                for key in var_to_shape_map:
-                    print("tensor_name: ", key)
+                # reader=pywrap_tensorflow.NewCheckpointReader(os.path.join(model_dir,'model.ckpt-1001'))
+                # var_to_shape_map=reader.get_variable_to_shape_map()
+                # for key in var_to_shape_map:
+                #     print("tensor_name: ", key)
 
                 if ckpt and ckpt.model_checkpoint_path:
                     saver.restore(sess, ckpt.model_checkpoint_path)
