@@ -86,8 +86,8 @@ def evaluate(net,log_dir, trian_list):
                         x_input, y_input = sess.run([xs,ys])
                         y_input -= 1
                         sum_ = sess.run([sum],feed_dict={x: x_input, y_: y_input})
-                        all_sum += sum_
-                        
+                        all_sum += sum_[0]
+
                     accuracy_score = all_sum / 8144
                     tf.summary.scalar('accuracy', accuracy_score)
                     summary = tf.summary.merge_all()
