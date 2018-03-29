@@ -37,7 +37,7 @@ if NET_TYPE == 'alexnet':
     IMAGE_SIZE = 227
 model_dir = os.path.join(MODEL_DIR, NET_TYPE, TRAIN_MODEL)
 
-def evaluate(net,log_dir):
+def evaluate(net,log_dir, trian_list):
     with tf.Graph().as_default() as g:
         data_iterator = get_test_data(DATA_PATH, 8144)
         next_element = data_iterator.get_next()
@@ -53,7 +53,7 @@ def evaluate(net,log_dir):
             name = 'input-y'
         )
 
-        model = net(x, 196, 1, None)
+        model = net(x, 196, 1, None, train_list=trian_list)
         y = model.get_prediction()
         softmax = tf.nn.softmax(y)
 
@@ -95,15 +95,22 @@ def evaluate(net,log_dir):
         time.sleep(EVAL_INTERVAL_SECS)
 
 def main(argv=None):
+    train_list == None
     if NET_TYPE == 'alexnet':
         print('--select AlexNet--')
         net = AlexNet
+        if TRAIN_MODEL == 'parttune':
+            train_list = ['fc8', 'fc6', 'fc5']
     elif NET_TYPE == 'googlenet':
         print('--select GoogLeNet--')
         net = GoogLeNet
+        if TRAIN_MODEL == 'parttune':
+            train_list = ['loss3_classifier', 'inception_5b', 'inception_5a']
     elif NET_TYPE == 'mobilenet':
         print('--select MobileNet--')
         net = MobileNets
+        if TRAIN_MODEL == 'parttune':
+            train_list = ['Logits', 'Conv2d_13_pointwise', 'Conv2d_13_depthwise']
     else:
         raise ValueError('net type enter error, please input writer error')
     
@@ -111,7 +118,7 @@ def main(argv=None):
     if not os.path.exists(log_dir):
         print('--create log file--')
         os.makedirs(log_dir)
-    evaluate(net,log_dir)
+    evaluate(net,log_dir, train_list)
 
 if __name__ =='__main__':
     tf.app.run()
