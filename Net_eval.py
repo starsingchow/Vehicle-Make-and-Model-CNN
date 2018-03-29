@@ -65,11 +65,10 @@ def evaluate(net,log_dir, trian_list):
         variable_averages = tf.train.ExponentialMovingAverage(MOVING_AVERAGE_DECAY)
         variables_to_restore = variable_averages.variables_to_restore()
         saver = tf.train.Saver(variables_to_restore)
-        merged = tf.summary.merge_all()
 
+        rate_set = {}
         while True:
             with tf.Session() as sess:
-                summary_writer = tf.summary.FileWriter(log_dir, sess.graph)
                 ckpt = tf.train.get_checkpoint_state(model_dir)
                 # reader=pywrap_tensorflow.NewCheckpointReader(os.path.join(model_dir,'model.ckpt-1001'))
                 # var_to_shape_map=reader.get_variable_to_shape_map()
@@ -80,26 +79,24 @@ def evaluate(net,log_dir, trian_list):
                     saver.restore(sess, ckpt.model_checkpoint_path)
                     global_step = ckpt.model_checkpoint_path.split('/')[-1].split('_')[-1]
                     all_sum = 0
-                    for i in range(8):
+                    for i in range(16):
                         xs, ys = next_element
-                        ys = tf.reshape(ys,[1018])
+                        ys = tf.reshape(ys,[509])
                         x_input, y_input = sess.run([xs,ys])
                         y_input -= 1
                         sum_ = sess.run([sum],feed_dict={x: x_input, y_: y_input})
                         all_sum += sum_[0]
 
                     accuracy_score = all_sum / 8144
-                    tf.summary.scalar('accuracy', accuracy_score)
-                    summary = tf.summary.merge_all()
                     print('After {0:s} training step(s), validation accuracy {1:g}'.format(global_step, accuracy_score))
-                    summary_writer.add_summary(summary.eval(),global_step)
+                    rate_set[str(global_step)] = accuracy_score
                 else:
                     print('No checkpoint file found')
                     return
-                
-                summary_writer.close()
-
-
+            
+            with open(log_dir+'/rate_set.txt', 'w') as f:
+                f.write(str(rate_set))      
+            
         time.sleep(EVAL_INTERVAL_SECS)
 
 def main(argv=None):
