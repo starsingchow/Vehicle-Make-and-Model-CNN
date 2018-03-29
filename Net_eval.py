@@ -92,7 +92,7 @@ def evaluate(net,log_dir, trian_list):
                     tf.summary.scalar('accuracy', accuracy_score)
                     summary = tf.summary.merge_all()
                     print('After {0:s} training step(s), validation accuracy {1:g}'.format(global_step, accuracy_score))
-                    summary_writer.add_summary(summary,global_step)
+                    summary_writer.add_summary(summary.eval(),global_step)
                 else:
                     print('No checkpoint file found')
                     return
