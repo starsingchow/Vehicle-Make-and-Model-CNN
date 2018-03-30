@@ -181,7 +181,6 @@ def train(net, net_para, label, keep_prob, save_dir, log_dir):
 
     with tf.Session() as sess:
         summary_writer = tf.summary.FileWriter(log_dir, sess.graph)
-        sess.graph.finalize()
         sess.run(tf.global_variables_initializer())
         model.loadModel(sess)
 
