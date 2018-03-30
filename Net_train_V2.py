@@ -190,7 +190,7 @@ def train(net, net_para, label, keep_prob, save_dir, log_dir):
                     x_input, y_input = sess.run([xs,ys])
                     y_input -= 1
                     _, rate, loss_value, step, summary = sess.run([train_op, correct_rate, loss, global_step, merged], feed_dict={x: x_input, y_: y_input})
-                    summary_writer.add_summary(summary,global_step)
+                    summary_writer.add_summary(summary,gitstep)
 
                     if i%1000 == 0:
                         print(step)
