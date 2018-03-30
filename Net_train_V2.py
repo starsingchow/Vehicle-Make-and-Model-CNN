@@ -139,7 +139,7 @@ def train(net, net_para, label, keep_prob, save_dir, log_dir):
             model = net(x, label, keep_prob, net_para.skip, train_list=net_para.train_list)
             y = model.get_prediction()
     
-            global_step = tf.Variable(0, trainable = False)
+            global_step = tf.Variable(t*1000, trainable = False)
 
             variable_averages = tf.train.ExponentialMovingAverage(MOVING_AVERAGE_DECAY, global_step)
             variable_averages_op = variable_averages.apply(tf.trainable_variables())
@@ -175,14 +175,14 @@ def train(net, net_para, label, keep_prob, save_dir, log_dir):
             merged = tf.summary.merge_all()
 
             with tf.Session() as sess:
-                summary_writer.add_graph(sess.graph, t*1000)
+                summary_writer.add_graph(sess.graph, global_step)
 
                 sess.run(tf.global_variables_initializer())
                 if t == 0:
                     model.loadModel(sess)
                 else:
                     ckpt = tf.train.get_checkpoint_state(save_dir)
-                    global_step = ckpt.model_checkpoint_path.split('/')[-1].split('_')[-1]
+                    saver.restore(sess, ckpt.model_checkpoint_path)
 
                 for i in range(1000):
                     xs, ys = next_element
@@ -190,14 +190,14 @@ def train(net, net_para, label, keep_prob, save_dir, log_dir):
                     x_input, y_input = sess.run([xs,ys])
                     y_input -= 1
                     _, rate, loss_value, step, summary = sess.run([train_op, correct_rate, loss, global_step, merged], feed_dict={x: x_input, y_: y_input})
-                    now_step = t*1000 + step
-                    summary_writer.add_summary(summary,now_step)
+                    summary_writer.add_summary(summary,global_step)
 
                     if i%1000 == 0:
-                        print("After {0:d} training step(s), loss on trian batch {1:g}".format(now_step, loss_value))
-                        print("After {0:d} training step(s), correct rate on trian batch {1:s}".format(now_step, str(rate.astype(np.float))))
+                        print(step)
+                        print("After {0:d} training step(s), loss on trian batch {1:g}".format(step, loss_value))
+                        print("After {0:d} training step(s), correct rate on trian batch {1:s}".format(step, str(rate.astype(np.float))))
                 
-                saver.save(sess, os.path.join(save_dir, MODEL_NAME), global_step=now_step)
+                saver.save(sess, os.path.join(save_dir, MODEL_NAME), global_step=global_step)
 
     summary_writer.close()
 
