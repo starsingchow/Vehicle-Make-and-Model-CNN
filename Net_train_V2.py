@@ -175,7 +175,7 @@ def train(net, net_para, label, keep_prob, save_dir, log_dir):
             merged = tf.summary.merge_all()
 
             with tf.Session() as sess:
-                summary_writer.add_graph(sess.graph, global_step)
+                summary_writer.add_graph(sess.graph, t*1000)
 
                 if t == 0:
                     sess.run(tf.global_variables_initializer())
