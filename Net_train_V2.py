@@ -177,8 +177,8 @@ def train(net, net_para, label, keep_prob, save_dir, log_dir):
             with tf.Session() as sess:
                 summary_writer.add_graph(sess.graph, global_step)
 
-                sess.run(tf.global_variables_initializer())
                 if t == 0:
+                    sess.run(tf.global_variables_initializer())
                     model.loadModel(sess)
                 else:
                     ckpt = tf.train.get_checkpoint_state(save_dir)

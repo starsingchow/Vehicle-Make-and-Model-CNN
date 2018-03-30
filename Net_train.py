@@ -181,9 +181,9 @@ def train(net, net_para, label, keep_prob, save_dir, log_dir):
 
     with tf.Session() as sess:
         summary_writer = tf.summary.FileWriter(log_dir, sess.graph)
+        sess.graph.finalize()
         sess.run(tf.global_variables_initializer())
         model.loadModel(sess)
-        sess.graph.finalize()
 
         for i in range(net_para.train_steps):
             xs, ys = next_element
