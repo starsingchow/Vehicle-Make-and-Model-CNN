@@ -182,6 +182,7 @@ def train(net, net_para, label, keep_prob, save_dir, log_dir):
                     model.loadModel(sess)
                 else:
                     ckpt = tf.train.get_checkpoint_state(save_dir)
+                    print('load model path is {0}'.format(ckpt.model_checkpoint_path))
                     saver.restore(sess, ckpt.model_checkpoint_path)
 
                 for i in range(1000):
@@ -193,7 +194,6 @@ def train(net, net_para, label, keep_prob, save_dir, log_dir):
                     summary_writer.add_summary(summary,step)
 
                     if i%1000 == 0:
-                        print(step)
                         print("After {0:d} training step(s), loss on trian batch {1:g}".format(step, loss_value))
                         print("After {0:d} training step(s), correct rate on trian batch {1:s}".format(step, str(rate.astype(np.float))))
                 
