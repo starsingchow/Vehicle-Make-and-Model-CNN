@@ -111,116 +111,105 @@ net_paras = {
         'fulltrain': MobileNet_full_train_para,
     }
 }
-BATCH_SIZE = 256
+BATCH_SIZE = 128
 NUMBER_CHANNEL = 3
 MOVING_AVERAGE_DECAY = 0.99
 
 def train(net, net_para, label, keep_prob, save_dir, log_dir):
-    data_iterator = get_train_data(DATA_PATH, BATCH_SIZE)
-    next_element = data_iterator.get_next()
-    # x_mean = np.load('./Vehicle-Make-and-Model-CNN/data/'+MEAN_VALUE)
-    x = tf.placeholder(
-        tf.float32,
-        [BATCH_SIZE, net_para.image_size, 
-        net_para.image_size, NUMBER_CHANNEL],
-        name = 'input-x'
-        )
-    y_ = tf.placeholder(
-        tf.int64, 
-        [None],
-        name = 'input-y'
-    )
+    times_1000 = net_para.train_steps/1000
+    summary_writer = tf.summary.FileWriter(log_dir)
+    for t in range(times_1000):
+        tf.reset_default_graph()
+        graph = tf.Graph()
+        with graph.as_default() as g:
+            data_iterator = get_train_data(DATA_PATH, BATCH_SIZE)
+            next_element = data_iterator.get_next()
+            x = tf.placeholder(
+                tf.float32,
+                [BATCH_SIZE, net_para.image_size, 
+                net_para.image_size, NUMBER_CHANNEL],
+                name = 'input-x'
+                )
+            y_ = tf.placeholder(
+                tf.int64, 
+                [None],
+                name = 'input-y'
+            )
 
-    model = net(x, label, keep_prob, net_para.skip, train_list=net_para.train_list)
-    y = model.get_prediction()
+            model = net(x, label, keep_prob, net_para.skip, train_list=net_para.train_list)
+            y = model.get_prediction()
     
-    global_step = tf.Variable(0, trainable = False)
+            global_step = tf.Variable(0, trainable = False)
 
-    variable_averages = tf.train.ExponentialMovingAverage(MOVING_AVERAGE_DECAY, global_step)
-    variable_averages_op = variable_averages.apply(tf.trainable_variables())
+            variable_averages = tf.train.ExponentialMovingAverage(MOVING_AVERAGE_DECAY, global_step)
+            variable_averages_op = variable_averages.apply(tf.trainable_variables())
     
-    # one_hot_y = tf.one_hot(y_, LABEL)
-    # cross_entropy = one_hot_y*tf.log(y+1e10)
+            logits =  y+1e10
+            cross_entropy_mean = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=y_))
+            with tf.name_scope('loss'):
+                loss = cross_entropy_mean
+                tf.summary.scalar('loss', loss)
 
-    # cross_entropy_mean = tf.reduce_mean(cross_entropy)
-    logits =  y+1e10
-    cross_entropy_mean = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=y_))
-    with tf.name_scope('loss'):
-        loss = cross_entropy_mean
-        tf.summary.scalar('loss', loss)
+            with tf.name_scope('accuracy'):
+                correct_prediction = tf.equal(tf.argmax(y,axis=1),y_)
+                correct_rate = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+                tf.summary.scalar('accuracy', correct_rate)
 
-    with tf.name_scope('accuracy'):
-        correct_prediction = tf.equal(tf.argmax(y,axis=1),y_)
-        correct_rate = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-        tf.summary.scalar('accuracy', correct_rate)
 
-    # learning_rate = tf.train.exponential_decay(
-    #     net_para.lr,
-    #     global_step,
-    #     net_para.train_steps / BATCH_SIZE,
-    #     net_para.lr_decay
-    # )
-
-    if isinstance(model, MobileNets) and (TRAIN_MODEL == 'finetune' or TRAIN_MODEL == 'parttune'):
-        train_step = tf.train.RMSPropOptimizer(net_para.lr, net_para.lr_decay).minimize(loss, global_step=global_step, 
+            if isinstance(model, MobileNets) and (TRAIN_MODEL == 'finetune' or TRAIN_MODEL == 'parttune'):
+                train_step = tf.train.RMSPropOptimizer(net_para.lr, net_para.lr_decay).minimize(loss, global_step=global_step, 
                                             var_list = tf.get_collection('train'))
-        # train_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss, global_step=global_step,
-        #                                         var_list = tf.get_collection('train'))
-    else:
-        train_step = tf.train.RMSPropOptimizer(net_para.lr, net_para.lr_decay).minimize(loss, global_step=global_step)
-        # train_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss, global_step=global_step)
+                # train_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss, global_step=global_step,
+                #                                         var_list = tf.get_collection('train'))
+            else:
+                train_step = tf.train.RMSPropOptimizer(net_para.lr, net_para.lr_decay).minimize(loss, global_step=global_step)
+                # train_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss, global_step=global_step)
     
     
 
-    with tf.control_dependencies([train_step, variable_averages_op]):
-        train_op = tf.no_op(name='train')
+            with tf.control_dependencies([train_step, variable_averages_op]):
+                train_op = tf.no_op(name='train')
     
-    saver = tf.train.Saver()
+            saver = tf.train.Saver()
     
-    merged = tf.summary.merge_all()
+            merged = tf.summary.merge_all()
 
-    with tf.Session() as sess:
-        summary_writer = tf.summary.FileWriter(log_dir, sess.graph)
-        sess.run(tf.global_variables_initializer())
-        model.loadModel(sess)
-        sess.graph.finalize()
+            with tf.Session() as sess:
+                summary_writer.add_graph(sess.graph, t*1000)
 
-        for i in range(net_para.train_steps):
-            xs, ys = next_element
-            ys = tf.reshape(ys,[BATCH_SIZE])
-            x_input, y_input = sess.run([xs,ys])
-            # x_input -= x_mean
-            y_input -= 1
-            _, rate, loss_value, step, summary = sess.run([train_op, correct_rate, loss, global_step, merged], feed_dict={x: x_input, y_: y_input})
-            
-            # print('-- origin --')
-            # print(y_input)
-            # print('-- predict --')
-            # print(np.argmax(y_pred,axis=1))
-            # print('-- compare--')
-            # print(np.equal(y_input, np.argmax(y_pred,axis=1)))
-            # print('-- rate --')
-            # pre_rate = np.sum(np.equal(y_input, np.argmax(y_pred,axis=1))) / BATCH_SIZE
-            # print(pre_rate)
-            # print('-- loss --')
-            # print('loss is {0}'.format(loss_value))
+                sess.run(tf.global_variables_initializer())
+                if t == 0:
+                    model.loadModel(sess)
+                else:
+                    ckpt = tf.train.get_checkpoint_state(save_dir)
+                    global_step = ckpt.model_checkpoint_path.split('/')[-1].split('_')[-1]
 
-            if i % 1000 == 0:
-                print("After {0:d} training step(s), loss on trian batch {1:g}".format(step, loss_value))
-                print("After {0:d} training step(s), correct rate on trian batch {1:s}".format(step, str(rate.astype(np.float))))
-                saver.save(sess, os.path.join(save_dir, MODEL_NAME), global_step=global_step)
+                for i in range(1000):
+                    xs, ys = next_element
+                    ys = tf.reshape(ys,[BATCH_SIZE])
+                    x_input, y_input = sess.run([xs,ys])
+                    y_input -= 1
+                    _, rate, loss_value, step, summary = sess.run([train_op, correct_rate, loss, global_step, merged], feed_dict={x: x_input, y_: y_input})
+                    now_step = t*1000 + step
+                    summary_writer.add_summary(summary,now_step)
 
-            summary_writer.add_summary(summary,i)
+                    if i%1000 == 0:
+                        print("After {0:d} training step(s), loss on trian batch {1:g}".format(now_step, loss_value))
+                        print("After {0:d} training step(s), correct rate on trian batch {1:s}".format(now_step, str(rate.astype(np.float))))
+                
+                saver.save(sess, os.path.join(save_dir, MODEL_NAME), global_step=now_step)
 
-        summary_writer.close()
+    summary_writer.close()
 
 def main(argv=None):
+    keep_prob = 0.5
     if NET_TYPE == 'alexnet':
         print('--select AlexNet--')
         net = AlexNet
     elif NET_TYPE == 'googlenet':
         print('--select GoogLeNet--')
         net = GoogLeNet
+        keep_prob = 0.4
     elif NET_TYPE == 'mobilenet':
         print('--select MobileNet--')
         net = MobileNets
@@ -248,7 +237,7 @@ def main(argv=None):
         print('--create log file--')
         os.makedirs(log_dir)
 
-    train(net, net_para, LABEL, 0.5, save_model_dir, log_dir)
+    train(net, net_para, LABEL, keep_prob, save_model_dir, log_dir)
 
 
 if __name__ == '__main__':
