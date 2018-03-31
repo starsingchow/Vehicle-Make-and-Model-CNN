@@ -157,7 +157,8 @@ def train(net, net_para, label, keep_prob, save_dir, log_dir):
 
 
             if isinstance(model, MobileNets) and (TRAIN_MODEL == 'finetune' or TRAIN_MODEL == 'parttune'):
-                print( tf.get_collection('train'))
+                print('yes')
+                print(tf.get_collection('train'))
                 train_step = tf.train.RMSPropOptimizer(net_para.lr, net_para.lr_decay).minimize(loss, global_step=global_step, 
                                             var_list = tf.get_collection('train'))
                 # train_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss, global_step=global_step,
