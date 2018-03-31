@@ -82,7 +82,7 @@ MobileNet_fine_tune_para = train_para(
 )
 
 MobileNet_part_tune_para = train_para(
-    image_size = 224, lr = 0.1, lr_decay = 0.96,
+    image_size = 224, lr = 0.05, lr_decay = 0.96,
     train_steps = 50000, train_type = 'part tune',
     skip = ['Logits'],
     train_list = ['Logits', 'Conv2d_13_pointwise', 'Conv2d_13_depthwise']
@@ -157,8 +157,6 @@ def train(net, net_para, label, keep_prob, save_dir, log_dir):
 
 
             if isinstance(model, MobileNets) and (TRAIN_MODEL == 'finetune' or TRAIN_MODEL == 'parttune'):
-                print('yes')
-                print(tf.get_collection('train'))
                 train_step = tf.train.RMSPropOptimizer(net_para.lr, net_para.lr_decay).minimize(loss, global_step=global_step, 
                                             var_list = tf.get_collection('train'))
                 # train_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss, global_step=global_step,
