@@ -58,8 +58,8 @@ def evaluate(net,trian_list):
             y = model.get_prediction()
             softmax = tf.nn.softmax(y)
 
-            top_1 = tf.nn.in_top_k(softmax, y, 1, name = 'top1')
-            top_5 = tf.nn.in_top_k(softmax, y, 5, name = 'top1')
+            top_1 = tf.nn.in_top_k(softmax, y_, 1, name = 'top1')
+            top_5 = tf.nn.in_top_k(softmax, y_, 5, name = 'top1')
 
             top_1 = tf.reduce_sum(tf.cast(top_1, tf.float32))
             top_5 = tf.reduce_sum(tf.cast(top_5, tf.float32))
@@ -80,8 +80,8 @@ def evaluate(net,trian_list):
 
                 if ckpt and ckpt.model_checkpoint_path:
                     saver.restore(sess, ckpt.model_checkpoint_path)
-                    top1_sum = 0
-                    top5_sum = 0
+                    top_1_sum = 0
+                    top_5_sum = 0
                     for i in range(17):
                         xs, ys = next_element
                         ys = tf.reshape(ys,[473])
