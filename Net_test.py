@@ -36,6 +36,7 @@ def evaluate(net,trian_list):
     i = 0
     rate_save = []
     while i<10:
+        tf.reset_default_graph()
         with tf.Graph().as_default() as g:
             data_iterator = get_test_data(DATA_PATH, 509)
             next_element = data_iterator.get_next()
