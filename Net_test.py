@@ -34,7 +34,9 @@ model_dir = os.path.join(MODEL_DIR, NET_TYPE, TRAIN_MODEL)
 
 def evaluate(net,trian_list):
     i = 0
-    rate_save = []
+    rate_top_1_save = []
+    rate_top_5_save = []
+
     while i<10:
         tf.reset_default_graph()
         with tf.Graph().as_default() as g:
@@ -56,8 +58,14 @@ def evaluate(net,trian_list):
             y = model.get_prediction()
             softmax = tf.nn.softmax(y)
 
-            correct_prediction = tf.equal(y_, tf.arg_max(softmax, dimension = 1))
-            sum = tf.reduce_sum(tf.cast(correct_prediction, tf.float32))
+            top_1 = tf.nn.in_top_k(softmax, y, 1, name = 'top1')
+            top_5 = tf.nn.in_top_k(softmax, y, 5, name = 'top1')
+
+            top_1 = tf.reduce_sum(tf.cast(top_1, tf.float32))
+            top_5 = tf.reduce_sum(tf.cast(top_5, tf.float32))
+
+            # correct_prediction = tf.equal(y_, tf.arg_max(softmax, dimension = 1))
+            # sum = tf.reduce_sum(tf.cast(correct_prediction, tf.float32))
 
             variable_averages = tf.train.ExponentialMovingAverage(MOVING_AVERAGE_DECAY)
             variables_to_restore = variable_averages.variables_to_restore()
@@ -72,25 +80,30 @@ def evaluate(net,trian_list):
 
                 if ckpt and ckpt.model_checkpoint_path:
                     saver.restore(sess, ckpt.model_checkpoint_path)
-                    all_sum = 0
+                    top1_sum = 0
+                    top5_sum = 0
                     for i in range(17):
                         xs, ys = next_element
                         ys = tf.reshape(ys,[473])
                         x_input, y_input = sess.run([xs,ys])
                         y_input -= 1
-                        sum_ = sess.run([sum],feed_dict={x: x_input, y_: y_input})
-                        all_sum += sum_[0]
+                        top_1_, top_5_ = sess.run([top_1,top_5],feed_dict={x: x_input, y_: y_input})
+                        top_1_sum += top_1_
+                        top_5_sum += top_5_
 
-                    accuracy_score = all_sum / 8041 
-                    rate_save.append(accuracy_score)
+                    top_1_score = top_1_sum / 8041 
+                    rate_top_1_save.append(top_1_score)
+                    top_5_score = top_5_sum / 8041 
+                    rate_top_5_save.append(top_5_score)                    
                     i += 1
                 else:
                     print('No checkpoint file found')
                     return 
 
-    mean_rate = np.mean(rate_save)
-    print('{0} accuracy score in test set is: {1}'.format(NET_TYPE, mean_rate))
-    
+    top_1_mean = np.mean(rate_top_1_save)
+    top_5_mean = np.mean(rate_top_5_save)
+    print('{0} Top1 accuracy score in test set is: {1}'.format(NET_TYPE, top_1_mean))
+    print('{0} Top5 accuracy score in test set is: {1}'.format(NET_TYPE, top_5_mean))
 
 def main(argv=None):
     train_list = None
