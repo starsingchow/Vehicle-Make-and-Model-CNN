@@ -11,8 +11,6 @@ import argparse
 import os
 import time
 
-os.environ["CUDA_VISIBLE_DEVICES"]="-1" 
-
 parser = argparse.ArgumentParser()
 parser.add_argument('net_model', choices = ['alexnet', 'googlenet','mobilenet'], default='folder', help='choose net')
 parser.add_argument('train_model', choices = ['finetune', 'fulltrain','parttune'], default='folder', help='choose net')
@@ -77,7 +75,6 @@ def evaluate(net,trian_list):
 
                 if ckpt and ckpt.model_checkpoint_path:
                     saver.restore(sess, ckpt.model_checkpoint_path)
-                    global_step = ckpt.model_checkpoint_path.split('/')[-1].split('_')[-1]
                     all_sum = 0
                     for i in range(16):
                         xs, ys = next_element
