@@ -81,7 +81,7 @@ def evaluate(net,trian_list):
                         sum_ = sess.run([sum],feed_dict={x: x_input, y_: y_input})
                         all_sum += sum_[0]
 
-                    accuracy_score = all_sum / 8144 
+                    accuracy_score = all_sum / 8041 
                     rate_save.append(accuracy_score)
                     i += 1
                 else:
