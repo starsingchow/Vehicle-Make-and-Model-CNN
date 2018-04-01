@@ -38,11 +38,11 @@ def evaluate(net,trian_list):
     while i<10:
         tf.reset_default_graph()
         with tf.Graph().as_default() as g:
-            data_iterator = get_test_data(DATA_PATH, 509)
+            data_iterator = get_test_data(DATA_PATH, 473)
             next_element = data_iterator.get_next()
             x = tf.placeholder(
                 tf.float32,
-                [509, IMAGE_SIZE, 
+                [473, IMAGE_SIZE, 
                 IMAGE_SIZE, NUMBER_CHANNEL],
                 name = 'input-x'
                 )
@@ -73,9 +73,9 @@ def evaluate(net,trian_list):
                 if ckpt and ckpt.model_checkpoint_path:
                     saver.restore(sess, ckpt.model_checkpoint_path)
                     all_sum = 0
-                    for i in range(16):
+                    for i in range(17):
                         xs, ys = next_element
-                        ys = tf.reshape(ys,[509])
+                        ys = tf.reshape(ys,[473])
                         x_input, y_input = sess.run([xs,ys])
                         y_input -= 1
                         sum_ = sess.run([sum],feed_dict={x: x_input, y_: y_input})
