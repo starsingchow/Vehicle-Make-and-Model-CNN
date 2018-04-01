@@ -61,8 +61,8 @@ def evaluate(net,trian_list):
             top_1 = tf.nn.in_top_k(softmax, y_, 1, name = 'top1')
             top_5 = tf.nn.in_top_k(softmax, y_, 5, name = 'top1')
 
-            top_1 = tf.reduce_sum(tf.cast(top_1, tf.float32))
-            top_5 = tf.reduce_sum(tf.cast(top_5, tf.float32))
+            top_1 = tf.reduce_mean(tf.cast(top_1, tf.float32))
+            top_5 = tf.reduce_mean(tf.cast(top_5, tf.float32))
 
             # correct_prediction = tf.equal(y_, tf.arg_max(softmax, dimension = 1))
             # sum = tf.reduce_sum(tf.cast(correct_prediction, tf.float32))
@@ -91,9 +91,9 @@ def evaluate(net,trian_list):
                         top_1_sum += top_1_
                         top_5_sum += top_5_
 
-                    top_1_score = top_1_sum / 8041 
+                    top_1_score = top_1_sum / 17 
                     rate_top_1_save.append(top_1_score)
-                    top_5_score = top_5_sum / 8041 
+                    top_5_score = top_5_sum / 17
                     rate_top_5_save.append(top_5_score)                    
                     i += 1
                 else:
