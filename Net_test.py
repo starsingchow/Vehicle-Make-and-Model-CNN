@@ -14,20 +14,16 @@ import time
 parser = argparse.ArgumentParser()
 parser.add_argument('net_model', choices = ['alexnet', 'googlenet','mobilenet'], default='folder', help='choose net')
 parser.add_argument('train_model', choices = ['finetune', 'fulltrain','parttune'], default='folder', help='choose net')
-parser.add_argument('--interval_secs', type=str, default='', help ='eval waiting times')
-parser.add_argument('--data_dir', type=str, default='', help ='Valid Data Dir')
+parser.add_argument('--data_dir', type=str, default='', help ='test Data Dir')
 parser.add_argument('--model_dir', type=str, default='', help ='Model Dir')
-parser.add_argument('--log_dir', type=str, default='', help ='Log Dir')
 
 FLAGS, _ = parser.parse_known_args()
 
 args = parser.parse_args()
 NET_TYPE = args.net_model
 TRAIN_MODEL = args.train_model
-EVAL_INTERVAL_SECS = args.interval_secs
 DATA_PATH = args.data_dir
 MODEL_DIR = args.model_dir
-LOG_DIR = args.log_dir
 NUMBER_CHANNEL = 3
 IMAGE_SIZE = 224
 MOVING_AVERAGE_DECAY = 0.99
