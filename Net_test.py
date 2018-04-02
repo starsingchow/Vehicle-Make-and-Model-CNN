@@ -41,7 +41,7 @@ def evaluate(net,trian_list):
     rate_top_5_save = []
     y_true = []
     y_predict = []
-    while k<10:
+    while k<1:
         tf.reset_default_graph()
         with tf.Graph().as_default() as g:
             data_iterator = get_test_data(DATA_PATH, 473)
@@ -94,7 +94,7 @@ def evaluate(net,trian_list):
                         top_1_, top_5_ = sess.run([top_1,top_5],feed_dict={x: x_input, y_: y_input})
                         top_1_sum += top_1_
                         top_5_sum += top_5_
-                        if k == 9:
+                        if k == 0:
                             y_true += list(y_input)
                             y_predict += list(y_predict)
 
