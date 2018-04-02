@@ -7,6 +7,7 @@ from sklearn.metrics import confusion_matrix
 from AlexNet import AlexNet
 from GoogLeNet import GoogLeNet
 from MobileNets import MobileNets
+from MobileNets_depth import MobileNets_depth
 
 from input_data import get_test_data
 
@@ -15,7 +16,7 @@ import os
 import time
 
 parser = argparse.ArgumentParser()
-parser.add_argument('net_model', choices = ['alexnet', 'googlenet','mobilenet'], default='folder', help='choose net')
+parser.add_argument('net_model', choices = ['alexnet', 'googlenet','mobilenet', 'mobilenet_0.75', 'mobilenet_0.5'], default='folder', help='choose net')
 parser.add_argument('train_model', choices = ['finetune', 'fulltrain','parttune'], default='folder', help='choose net')
 parser.add_argument('--data_dir', type=str, default='', help ='test Data Dir')
 parser.add_argument('--model_dir', type=str, default='', help ='Model Dir')
@@ -41,7 +42,7 @@ def evaluate(net,trian_list):
     rate_top_5_save = []
     y_true = []
     y_predict = []
-    while k<1:
+    while k<10:
         tf.reset_default_graph()
         with tf.Graph().as_default() as g:
             data_iterator = get_test_data(DATA_PATH, 473)
@@ -58,7 +59,12 @@ def evaluate(net,trian_list):
                 name = 'input-y'
             )
 
-            model = net(x, 196, 1, None, train_list=trian_list)
+            if NET_TYPE == 'mobilenet_0.5':
+                model = net(x, 196, 1, None, train_list=train_list, depth_multiplier=0.5)
+            elif NET_TYPE == 'mobilenet_0.75':
+                model = net(x, 196, 1, None, train_list=train_list, depth_multiplier=0.75)
+            else:
+                model = net(x, 196, 1, None, train_list=trian_list)
             y = model.get_prediction()
             softmax = tf.nn.softmax(y)
             y_p = tf.arg_max(softmax, dimension = 1)
@@ -140,12 +146,12 @@ def main(argv=None):
             train_list = ['Logits', 'Conv2d_13_pointwise', 'Conv2d_13_depthwise']
     elif NET_TYPE == 'mobilenet_0.75':
         print('--select MobileNet_0.75--')
-        net = MobileNets
+        net = MobileNets_depth
         if TRAIN_MODEL == 'parttune':
             train_list = ['Logits', 'Conv2d_13_pointwise', 'Conv2d_13_depthwise']
     elif NET_TYPE == 'mobilenet_0.5':
         print('--select MobileNet_0.5--')
-        net = MobileNets
+        net = MobileNets_depth
         if TRAIN_MODEL == 'parttune':
             train_list = ['Logits', 'Conv2d_13_pointwise', 'Conv2d_13_depthwise']
     else:

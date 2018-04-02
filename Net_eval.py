@@ -5,6 +5,7 @@ import numpy as np
 from AlexNet import AlexNet
 from GoogLeNet import GoogLeNet
 from MobileNets import MobileNets
+from MobileNets_depth import MobileNets_depth
 
 from input_data import get_test_data
 
@@ -15,7 +16,7 @@ import time
 os.environ["CUDA_VISIBLE_DEVICES"]="-1" 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('net_model', choices = ['alexnet', 'googlenet','mobilenet'], default='folder', help='choose net')
+parser.add_argument('net_model', choices = ['alexnet', 'googlenet','mobilenet', 'mobilenet_0.75', 'mobilenet_0.5'], default='folder', help='choose net')
 parser.add_argument('train_model', choices = ['finetune', 'fulltrain','parttune'], default='folder', help='choose net')
 parser.add_argument('--interval_secs', type=str, default='', help ='eval waiting times')
 parser.add_argument('--data_dir', type=str, default='', help ='Valid Data Dir')
@@ -55,7 +56,14 @@ def evaluate(net,log_dir, trian_list):
             name = 'input-y'
         )
 
-        model = net(x, 196, 1, None, train_list=trian_list)
+        if NET_TYPE == 'mobilenet_0.5':
+            model = net(x, 196, 1, None, train_list=train_list, depth_multiplier=0.5)
+        elif NET_TYPE == 'mobilenet_0.75':
+            model = net(x, 196, 1, None, train_list=train_list, depth_multiplier=0.75)
+        else:
+            model = net(x, 196, 1, None, train_list=trian_list)
+        
+
         y = model.get_prediction()
         softmax = tf.nn.softmax(y)
 
@@ -114,6 +122,16 @@ def main(argv=None):
     elif NET_TYPE == 'mobilenet':
         print('--select MobileNet--')
         net = MobileNets
+        if TRAIN_MODEL == 'parttune':
+            train_list = ['Logits', 'Conv2d_13_pointwise', 'Conv2d_13_depthwise']
+    elif NET_TYPE == 'mobilenet_0.75':
+        print('--select MobileNet_0.75--')
+        net = MobileNets_depth
+        if TRAIN_MODEL == 'parttune':
+            train_list = ['Logits', 'Conv2d_13_pointwise', 'Conv2d_13_depthwise']
+    elif NET_TYPE == 'mobilenet_0.5':
+        print('--select MobileNet_0.5--')
+        net = MobileNets_depth
         if TRAIN_MODEL == 'parttune':
             train_list = ['Logits', 'Conv2d_13_pointwise', 'Conv2d_13_depthwise']
     else:
