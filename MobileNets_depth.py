@@ -38,7 +38,11 @@ batch_norm_params = {
       'epsilon': 0.001,
   }
 
-class MobileNets(object):
+model_path_dict = {0.5:'./Vehicle-Make-and-Model-CNN/data/mobilenets_v1_0.5_224.npy',
+                    0.75:'./Vehicle-Make-and-Model-CNN/data/mobilenets_v1_0.75_224.npy',
+                    1.0:'./Vehicle-Make-and-Model-CNN/data/mobilenets_v1_1.0_224.npy',
+                    }
+class MobileNets_depth(object):
     def __init__(self, inputs, num_label, keep_prob, skip, model_path = 'DEFAULT', 
                 conv_defs = None, train_list = None, depth_multiplier=1.0):
         self._num_label = num_label
@@ -47,7 +51,7 @@ class MobileNets(object):
         self._train_list = train_list
 
         if model_path == 'DEFAULT':
-            self._model_path = './Vehicle-Make-and-Model-CNN/data/mobilenets_v1_1.0_224.npy'
+            self._model_path = model_path_dict[depth_multiplier]
             # self._model_path = './CNN/data/mobilenets_v1_1.0_224.npy'
         else:
             self._model_path = model_path

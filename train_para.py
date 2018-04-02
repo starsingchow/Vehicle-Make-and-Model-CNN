@@ -5,7 +5,7 @@ class train_para():
                 train_steps, reg_rate = None, 
                 moving_average_decay = None,
                 skip = None, train_type = 'full train',
-                train_list = None, 
+                train_list = None, depth_multiplier = None
                 ):
         '''
         image_size: int, input data size
@@ -27,6 +27,7 @@ class train_para():
         if self.skip == None:
                 self.skip = []
         self.train_type = train_type
+        self.depth_multiplier = depth_multiplier
         # if train_type == 'full train':
         #         self.train_type = 0
         # elif train_type == 'part fune':

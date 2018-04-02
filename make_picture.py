@@ -84,4 +84,16 @@ plt.ylim(ymin=0,ymax=1.05)
 plt.savefig('mobilenet_1.0_valid_accuracy.png',dpi=150)
 plt.show()
 
+#%%
+import numpy as np
 
+matrix = np.load('/Users/starsingchow/Downloads/googlenet_matrix.npy')
+
+f, (ax1) = plt.subplots(figsize=(10,8))
+plt.rcParams['font.family'] = 'SimSun'
+ax1.set_title('GoogLeNet 测试集混淆矩阵', size= 20)
+sns.heatmap(matrix,linewidths=0,cmap="YlGnBu",fmt="d",annot=False,xticklabels=50, yticklabels=50,ax=ax1)
+ax1.set_xlabel('真标签',size = 20)
+ax1.set_ylabel('预测标签', size = 20)
+plt.savefig('GoogLeNet 测试集混淆矩阵.png', bbox_inches='tight',dpi=150)
+plt.show()

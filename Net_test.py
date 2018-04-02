@@ -138,6 +138,16 @@ def main(argv=None):
         net = MobileNets
         if TRAIN_MODEL == 'parttune':
             train_list = ['Logits', 'Conv2d_13_pointwise', 'Conv2d_13_depthwise']
+    elif NET_TYPE == 'mobilenet_0.75':
+        print('--select MobileNet_0.75--')
+        net = MobileNets
+        if TRAIN_MODEL == 'parttune':
+            train_list = ['Logits', 'Conv2d_13_pointwise', 'Conv2d_13_depthwise']
+    elif NET_TYPE == 'mobilenet_0.5':
+        print('--select MobileNet_0.5--')
+        net = MobileNets
+        if TRAIN_MODEL == 'parttune':
+            train_list = ['Logits', 'Conv2d_13_pointwise', 'Conv2d_13_depthwise']
     else:
         raise ValueError('net type enter error, please input writer error')
     
