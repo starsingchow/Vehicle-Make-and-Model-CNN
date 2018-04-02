@@ -36,7 +36,7 @@ if NET_TYPE == 'alexnet':
     IMAGE_SIZE = 227
 model_dir = os.path.join(MODEL_DIR, NET_TYPE, TRAIN_MODEL)
 
-def evaluate(net,trian_list):
+def evaluate(net,train_list):
     k = 0
     rate_top_1_save = []
     rate_top_5_save = []
@@ -64,7 +64,7 @@ def evaluate(net,trian_list):
             elif NET_TYPE == 'mobilenet_0.75':
                 model = net(x, 196, 1, None, train_list=train_list, depth_multiplier=0.75)
             else:
-                model = net(x, 196, 1, None, train_list=trian_list)
+                model = net(x, 196, 1, None, train_list=train_list)
             y = model.get_prediction()
             softmax = tf.nn.softmax(y)
             y_p = tf.arg_max(softmax, dimension = 1)

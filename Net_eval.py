@@ -40,7 +40,7 @@ if NET_TYPE == 'alexnet':
     IMAGE_SIZE = 227
 model_dir = os.path.join(MODEL_DIR, NET_TYPE, TRAIN_MODEL)
 
-def evaluate(net,log_dir, trian_list):
+def evaluate(net,log_dir, train_list):
     with tf.Graph().as_default() as g:
         data_iterator = get_test_data(DATA_PATH, 509)
         next_element = data_iterator.get_next()
@@ -61,7 +61,7 @@ def evaluate(net,log_dir, trian_list):
         elif NET_TYPE == 'mobilenet_0.75':
             model = net(x, 196, 1, None, train_list=train_list, depth_multiplier=0.75)
         else:
-            model = net(x, 196, 1, None, train_list=trian_list)
+            model = net(x, 196, 1, None, train_list=train_list)
         
 
         y = model.get_prediction()
