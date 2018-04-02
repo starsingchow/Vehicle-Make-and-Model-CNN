@@ -41,7 +41,7 @@ def evaluate(net,trian_list):
     rate_top_5_save = []
     y_true = []
     y_predict = []
-    while i<10:
+    while k<10:
         tf.reset_default_graph()
         with tf.Graph().as_default() as g:
             data_iterator = get_test_data(DATA_PATH, 473)
