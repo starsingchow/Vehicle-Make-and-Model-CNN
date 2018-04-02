@@ -119,7 +119,7 @@ def evaluate(net,train_list):
     print('{0} Top1 accuracy score in test set is: {1}'.format(NET_TYPE, top_1_mean))
     print('{0} Top5 accuracy score in test set is: {1}'.format(NET_TYPE, top_5_mean))
     
-    matrix = confusion_matrix(y_true,y_predict, labels=list(range(0,176)))
+    matrix = confusion_matrix(y_true,y_predict, labels=list(range(0,196)))
     np.save('{0}_matrix.npy'.format(NET_TYPE), matrix)
     # plt.figure(figsize=(16,6))
     # plt.rcParams['font.family'] = 'SimSun'
