@@ -116,6 +116,7 @@ def evaluate(net,trian_list):
     print(y_predict)
     print(y_input)
     matrix = confusion_matrix(y_true,y_predict, labels=list(range(0,176)))
+    print(matrix)
     plt.figure(figsize=(16,6))
     plt.rcParams['font.family'] = 'SimSun'
     plt.title('{0} 测试集混淆矩阵'.format(NET_TYPE))
