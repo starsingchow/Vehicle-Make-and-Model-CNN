@@ -45,7 +45,7 @@ AlexNet_fine_tune_para = train_para(
 
 AlexNet_part_tune_para = train_para(
     image_size = 227, lr = 0.0001, lr_decay = 0.9,
-    train_steps = 80000, train_type = 'part tune',
+    train_steps = 50000, train_type = 'part tune',
     skip = ['fc8'],train_list = ['fc8', 'fc6', 'fc5']
 )
 
@@ -118,7 +118,7 @@ MOVING_AVERAGE_DECAY = 0.99
 def train(net, net_para, label, keep_prob, save_dir, log_dir):
     times_1000 = net_para.train_steps/1000
     summary_writer = tf.summary.FileWriter(log_dir)
-    for t in range(31,int(times_1000)):
+    for t in range(39,int(times_1000)):
         tf.reset_default_graph()
         graph = tf.Graph()
         with graph.as_default() as g:
