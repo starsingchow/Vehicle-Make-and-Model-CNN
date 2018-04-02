@@ -113,15 +113,13 @@ def evaluate(net,trian_list):
     print('{0} Top1 accuracy score in test set is: {1}'.format(NET_TYPE, top_1_mean))
     print('{0} Top5 accuracy score in test set is: {1}'.format(NET_TYPE, top_5_mean))
     
-    print(y_predict)
-    print(y_input)
     matrix = confusion_matrix(y_true,y_predict, labels=list(range(0,176)))
-    print(matrix)
-    plt.figure(figsize=(16,6))
-    plt.rcParams['font.family'] = 'SimSun'
-    plt.title('{0} 测试集混淆矩阵'.format(NET_TYPE))
-    sns.heatmap(matrix,linewidths=0,cmap="YlGnBu",fmt="d",annot=True)
-    plt.savefig('{0} 测试集混淆矩阵.png'.format(NET_TYPE), bbox_inches='tight')
+    np.save('{0}_matrix.npy', matrix)
+    # plt.figure(figsize=(16,6))
+    # plt.rcParams['font.family'] = 'SimSun'
+    # plt.title('{0} 测试集混淆矩阵'.format(NET_TYPE))
+    # sns.heatmap(matrix,linewidths=0,cmap="YlGnBu",fmt="d",annot=True)
+    # plt.savefig('{0} 测试集混淆矩阵.png'.format(NET_TYPE), bbox_inches='tight')
 
 def main(argv=None):
     train_list = None
