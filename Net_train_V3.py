@@ -195,6 +195,11 @@ def train(net, net_para, label, keep_prob, save_dir, log_dir):
                                             var_list = tf.get_collection('train'))
                 # train_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss, global_step=global_step,
                 #                                         var_list = tf.get_collection('train'))
+            elif isinstance(model, MobileNets_depth) and (TRAIN_MODEL == 'finetune' or TRAIN_MODEL == 'parttune'):
+                train_step = tf.train.RMSPropOptimizer(net_para.lr, net_para.lr_decay).minimize(loss, global_step=global_step, 
+                                            var_list = tf.get_collection('train'))
+                # train_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss, global_step=global_step,
+                #                                         var_list = tf.get_collection('train'))
             else:
                 train_step = tf.train.RMSPropOptimizer(net_para.lr, net_para.lr_decay).minimize(loss, global_step=global_step)
                 # train_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss, global_step=global_step)
@@ -249,10 +254,10 @@ def main(argv=None):
         net = MobileNets
     elif NET_TYPE == 'mobilenet_0.75':
         print('--select MobileNet_0.75--')
-        net = MobileNets
+        net = MobileNets_depth
     elif NET_TYPE == 'mobilenet_0.5':
         print('--select MobileNet_0.5--')
-        net = MobileNets
+        net = MobileNets_depth
     else:
         raise ValueError('net type enter error, please input writer error')
     
