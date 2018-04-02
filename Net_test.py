@@ -36,7 +36,7 @@ if NET_TYPE == 'alexnet':
 model_dir = os.path.join(MODEL_DIR, NET_TYPE, TRAIN_MODEL)
 
 def evaluate(net,trian_list):
-    i = 0
+    k = 0
     rate_top_1_save = []
     rate_top_5_save = []
     y_true = []
@@ -103,7 +103,7 @@ def evaluate(net,trian_list):
                     rate_top_1_save.append(top_1_score)
                     top_5_score = top_5_sum / 17
                     rate_top_5_save.append(top_5_score)                    
-                    i += 1
+                    k += 1
                 else:
                     print('No checkpoint file found')
                     return 

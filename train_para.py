@@ -5,7 +5,7 @@ class train_para():
                 train_steps, reg_rate = None, 
                 moving_average_decay = None,
                 skip = None, train_type = 'full train',
-                train_list = None
+                train_list = None, 
                 ):
         '''
         image_size: int, input data size
