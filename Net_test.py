@@ -1,6 +1,9 @@
 import tensorflow as tf
 import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
 
+from sklearn.metrics import confusion_matrix
 from AlexNet import AlexNet
 from GoogLeNet import GoogLeNet
 from MobileNets import MobileNets
@@ -36,7 +39,8 @@ def evaluate(net,trian_list):
     i = 0
     rate_top_1_save = []
     rate_top_5_save = []
-
+    y_true = []
+    y_predict = []
     while i<10:
         tf.reset_default_graph()
         with tf.Graph().as_default() as g:
@@ -90,6 +94,10 @@ def evaluate(net,trian_list):
                         top_1_, top_5_ = sess.run([top_1,top_5],feed_dict={x: x_input, y_: y_input})
                         top_1_sum += top_1_
                         top_5_sum += top_5_
+                        if k == 9:
+                            y_true += list(y_input)
+                            y_predict += list(y_predict)
+
 
                     top_1_score = top_1_sum / 17 
                     rate_top_1_save.append(top_1_score)
@@ -104,6 +112,13 @@ def evaluate(net,trian_list):
     top_5_mean = np.mean(rate_top_5_save)
     print('{0} Top1 accuracy score in test set is: {1}'.format(NET_TYPE, top_1_mean))
     print('{0} Top5 accuracy score in test set is: {1}'.format(NET_TYPE, top_5_mean))
+    
+    matrix = confusion_matrix(y_true,y_predict, labels=list(range(0,176)))
+    plt.figure(figsize=(16,6))
+    plt.rcParams['font.family'] = 'SimSun'
+    plt.title('{0} 测试集混淆矩阵'.format(NET_TYPE))
+    sns.heatmap(matrix,linewidths=0,cmap="YlGnBu",fmt="d",annot=True)
+    plt.savefig('{0} 测试集混淆矩阵.png'.format(NET_TYPE), bbox_inches='tight')
 
 def main(argv=None):
     train_list = None

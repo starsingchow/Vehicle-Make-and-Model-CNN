@@ -13,6 +13,7 @@ import cv2
 
 parser = argparse.ArgumentParser(description='Classify some images.')
 parser.add_argument('mode', choices = ['folder', 'url'], default='folder', help='data file mode')
+parser.add_argument('net_model', choices = ['alexnet', 'googlenet','mobilenet'], default='googlenet', help='choose net')
 parser.add_argument('path', type=str, default='', help='input data folder/path')
 
 args = parser.parse_args(sys.argv[1:])
