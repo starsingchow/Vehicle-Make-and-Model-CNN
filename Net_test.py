@@ -61,7 +61,7 @@ def evaluate(net,trian_list):
             model = net(x, 196, 1, None, train_list=trian_list)
             y = model.get_prediction()
             softmax = tf.nn.softmax(y)
-
+            y_p = tf.arg_max(softmax, dimension = 1)
             top_1 = tf.nn.in_top_k(softmax, y_, 1, name = 'top1')
             top_5 = tf.nn.in_top_k(softmax, y_, 5, name = 'top1')
 
@@ -91,12 +91,12 @@ def evaluate(net,trian_list):
                         ys = tf.reshape(ys,[473])
                         x_input, y_input = sess.run([xs,ys])
                         y_input -= 1
-                        top_1_, top_5_ = sess.run([top_1,top_5],feed_dict={x: x_input, y_: y_input})
+                        top_1_, top_5_ , y_pred= sess.run([top_1,top_5,y_p],feed_dict={x: x_input, y_: y_input})
                         top_1_sum += top_1_
                         top_5_sum += top_5_
                         if k == 0:
                             y_true += list(y_input)
-                            y_predict += list(y_predict)
+                            y_predict += list(y_pred)
 
 
                     top_1_score = top_1_sum / 17 
