@@ -98,7 +98,7 @@ MobileNet_full_train_para = train_para(
 
 '''MobileNet V1 0.75 224'''
 MobileNet_75_part_tune_para = train_para(
-    image_size = 224, lr = 0.05, lr_decay = 0.5,
+    image_size = 224, lr = 0.05, lr_decay = 0.9,
     train_steps = 50000, train_type = 'part tune',
     skip = ['Logits'], depth_multiplier = 0.75,
     train_list = ['Logits', 'Conv2d_13_pointwise', 'Conv2d_13_depthwise']
