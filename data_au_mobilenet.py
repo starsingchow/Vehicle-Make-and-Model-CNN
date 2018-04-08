@@ -100,6 +100,14 @@ def Squash(image):
     tf.get_default_graph().finalize()
     return eval
 
+def RandomFlip(image):
+    tf.reset_default_graph()
+    with tf.Session() as sess:
+        flipped_image = tf.image.flip_left_right(image)
+        eval = sess.run(flipped_image)
+    tf.get_default_graph().finalize()
+    return eval
+
 if __name__ == '__main__':
     '''use in ec2'''
     car_data = pd.read_csv('./Vehicle-Make-and-Model-CNN/car_information.csv')
