@@ -53,7 +53,7 @@ def data_augmenttation(dir, car_data, save):
         k = 0
         for all_image in all_images:
             save_dir = train_dir
-            if i in valid_set and belong_valid[i] == 1:
+            if i in valid_set and belong_valid[k] == 1:
                 save_dir = valid_dir
 
             all_image = Squash(all_image)
