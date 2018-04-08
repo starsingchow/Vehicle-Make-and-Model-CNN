@@ -40,11 +40,6 @@ def data_augmenttation(dir, car_data, save):
         rgb_image = cv2.cvtColor(image[0], cv2.COLOR_BGR2RGB)
         bbox = image[1]
         bbox_image = bbox_crop(rgb_image, bbox)
-        # print(bbox_image.shape)
-        flipped_image = RandomFlip(bbox_image)
-        all_image = bbox_image + flipped_image
-
-        squash_image = Squash(all_image)
 
         name_label = car_data.loc[car_data['relative_im_path'] == key, ['class', 'test']]
         if int(name_label['test']) == 1:
